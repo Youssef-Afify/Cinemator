@@ -9,12 +9,14 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.controller,
     this.isPassword = false,
+    this.enabled = true,
   });
   final String label;
   final IconData? prefixIcon;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final bool isPassword;
+  final bool enabled;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -40,7 +42,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         onTap: () => setState(() => _obscure = !_obscure),
         child: Icon(
           _obscure ? Icons.visibility : Icons.visibility_off,
-          color: Color(0xffC8C6C6),
+          color: AppColors.neutral,
         ),
       );
     }
@@ -49,27 +51,34 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   Widget? prefixIcon() => widget.prefixIcon == null
       ? null
-      : Icon(widget.prefixIcon, color: Color(0xffC8C6C6));
+      : Icon(widget.prefixIcon, color: AppColors.neutral);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
       validator: widget.validator,
+      enabled: widget.enabled,
       cursorColor: AppColors.primary,
-      style: TextStyle(color: Colors.white),
+      style: TextStyle(
+        color: widget.enabled ? Colors.white : const Color(0xff7A7A79),
+      ),
       cursorHeight: 20.0,
       obscureText: _obscure,
       decoration: InputDecoration(
         prefixIcon: prefixIcon(),
         suffixIcon: suffixIcon(),
         labelText: widget.label,
-        labelStyle: TextStyle(color: Color(0xffC8C6C6)),
+        labelStyle: TextStyle(
+          color: widget.enabled ? AppColors.neutral : const Color(0xff7A7A79),
+        ),
         filled: true,
-        fillColor: const Color(0xff161616),
+        fillColor: widget.enabled
+            ? const Color(0xff161616)
+            : const Color(0xff111111),
         enabledBorder: _border(),
-        focusedBorder: _border(Color(0xffC8C6C6)),
-        disabledBorder: _border(),
+        focusedBorder: _border(AppColors.neutral),
+        disabledBorder: _border(const Color(0xff2A2A29)),
         errorBorder: _border(Colors.red),
         focusedErrorBorder: _border(Colors.red),
       ),

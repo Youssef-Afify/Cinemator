@@ -51,7 +51,7 @@ class _RootState extends State<Root> {
           elevation: 0,
           backgroundColor: Colors.transparent,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xffFFB4AA),
+          selectedItemColor: AppColors.secondary,
           unselectedItemColor: AppColors.neutral,
           items: RootModel.bottomNavBarItems(currentScreen),
           currentIndex: currentScreen,

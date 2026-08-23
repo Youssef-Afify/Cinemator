@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'movie_model.dart';
-import 'tmdb_response.dart';
+import 'package:task/core/constants/enums.dart';
+import '../../movie_details/data/movie_details_model.dart';
+import 'tmdb_model.dart';
 
 class MovieRepository {
   final String apiKey;
@@ -12,40 +13,28 @@ class MovieRepository {
 
   // ========== API Endpoints ==========
 
-  /// Get popular movies
-  Future<TmdbResponse> getPopularMovies({int page = 1}) async {
+  Future<TmdbModel> getByCategory({
+    int page = 1,
+    required CategoryGet category,
+  }) async {
     final url = Uri.parse(
-      '$baseUrl/movie/popular?api_key=$apiKey&page=$page',
+      '$baseUrl/movie/${_getCategory(category)}?api_key=$apiKey&page=$page',
     );
     return await _fetchResponse(url);
   }
 
-  /// Get now playing movies
-  Future<TmdbResponse> getNowPlaying({int page = 1}) async {
+  Future<TmdbModel> getForMovie(
+    int movieId, {
+    int page = 1,
+    MovieGet movie = MovieGet.similar,
+  }) async {
     final url = Uri.parse(
-      '$baseUrl/movie/now_playing?api_key=$apiKey&page=$page',
+      '$baseUrl/movie/$movieId/${movie.toString()}?api_key=$apiKey&page=$page',
     );
     return await _fetchResponse(url);
   }
 
-  /// Get upcoming movies
-  Future<TmdbResponse> getUpcoming({int page = 1}) async {
-    final url = Uri.parse(
-      '$baseUrl/movie/upcoming?api_key=$apiKey&page=$page',
-    );
-    return await _fetchResponse(url);
-  }
-
-  /// Get top rated movies
-  Future<TmdbResponse> getTopRated({int page = 1}) async {
-    final url = Uri.parse(
-      '$baseUrl/movie/top_rated?api_key=$apiKey&page=$page',
-    );
-    return await _fetchResponse(url);
-  }
-
-  /// Search movies by query
-  Future<TmdbResponse> searchMovies(String query, {int page = 1}) async {
+  Future<TmdbModel> searchMovies(String query, {int page = 1}) async {
     final encodedQuery = Uri.encodeComponent(query);
     final url = Uri.parse(
       '$baseUrl/search/movie?api_key=$apiKey&query=$encodedQuery&page=$page',
@@ -53,12 +42,11 @@ class MovieRepository {
     return await _fetchResponse(url);
   }
 
-  /// Get detailed info for a specific movie
-  Future<MovieModel> getMovieDetails(int movieId) async {
+  Future<MovieDetailsModel> getMovieDetails(int movieId) async {
     final url = Uri.parse(
-      '$baseUrl/movie/$movieId?api_key=$apiKey',
+      '$baseUrl/movie/$movieId?api_key=$apiKey&append_to_response=credits,videos',
     );
-    
+
     final response = await _fetchWithRetry(() async {
       return await http.get(url);
     });
@@ -68,21 +56,15 @@ class MovieRepository {
     }
 
     final data = json.decode(response.body);
-    return MovieModel.fromJson(data);
+    return MovieDetailsModel.fromJson(data);
   }
 
-  /// Get similar movies for a specific movie
-  Future<TmdbResponse> getSimilarMovies(int movieId, {int page = 1}) async {
+  Future<TmdbModel> getMoviesByGenre({
+    required int genreId,
+    int page = 1,
+  }) async {
     final url = Uri.parse(
-      '$baseUrl/movie/$movieId/similar?api_key=$apiKey&page=$page',
-    );
-    return await _fetchResponse(url);
-  }
-
-  /// Get recommendations based on a movie
-  Future<TmdbResponse> getRecommendations(int movieId, {int page = 1}) async {
-    final url = Uri.parse(
-      '$baseUrl/movie/$movieId/recommendations?api_key=$apiKey&page=$page',
+      '$baseUrl/discover/movie?api_key=$apiKey&with_genres=$genreId&page=$page',
     );
     return await _fetchResponse(url);
   }
@@ -93,7 +75,10 @@ class MovieRepository {
   final Map<String, CacheEntry> _cache = {};
   static const Duration cacheDuration = Duration(minutes: 30);
 
-  Future<TmdbResponse> getWithCache(String key, Future<TmdbResponse> Function() fetch) async {
+  Future<TmdbModel> getWithCache(
+    String key,
+    Future<TmdbModel> Function() fetch,
+  ) async {
     // Check if cache is valid
     if (_cache.containsKey(key)) {
       final entry = _cache[key]!;
@@ -114,7 +99,20 @@ class MovieRepository {
 
   // ========== Private Methods ==========
 
-  Future<TmdbResponse> _fetchResponse(Uri url) async {
+  String _getCategory(CategoryGet category) {
+    switch (category) {
+      case CategoryGet.popular:
+        return 'popular';
+      case CategoryGet.nowPlaying:
+        return 'now_playing';
+      case CategoryGet.upcoming:
+        return 'upcoming';
+      case CategoryGet.topRated:
+        return 'top_rated';
+    }
+  }
+
+  Future<TmdbModel> _fetchResponse(Uri url) async {
     final response = await _fetchWithRetry(() async {
       return await http.get(url);
     });
@@ -124,7 +122,7 @@ class MovieRepository {
     }
 
     final data = json.decode(response.body);
-    return TmdbResponse.fromJson(data);
+    return TmdbModel.fromJson(data);
   }
 
   Future<http.Response> _fetchWithRetry(
@@ -174,7 +172,7 @@ class MovieRepository {
 
 // Cache helper class
 class CacheEntry {
-  final TmdbResponse data;
+  final TmdbModel data;
   final DateTime timestamp;
 
   CacheEntry({required this.data, required this.timestamp});

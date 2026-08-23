@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:task/core/constants/app_colors.dart';
+import 'package:task/core/constants/app_info.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/features/auth/views/auth_view.dart';
 
@@ -35,7 +36,7 @@ class _SplashState extends State<Splash> {
           children: [
             Icon(Icons.movie, color: AppColors.primary, size: 100),
             Text(
-              'CINEMATOR',
+              AppInfo.name,
               style: TextStyle(
                 color: AppColors.primary,
                 fontFamily: 'Manrope',

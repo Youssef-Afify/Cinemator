@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
+import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/root.dart';
@@ -9,7 +10,7 @@ import 'package:task/shared/custom_text_field.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/core/utils/validators/email_validator.dart';
 import 'package:task/core/utils/validators/password_validator.dart';
-import 'package:task/widgets/custom_button.dart';
+import 'package:task/shared/custom_button.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -48,7 +49,7 @@ class _LoginViewState extends State<LoginView> {
             children: [
               Icon(Icons.movie, color: AppColors.primary, size: 100),
               Text(
-                'CINEMATOR',
+                AppInfo.name,
                 style: TextStyle(
                   color: AppColors.primary,
                   fontFamily: 'Manrope',
@@ -94,7 +95,22 @@ class _LoginViewState extends State<LoginView> {
                         controller: _passwordController,
                         isPassword: true,
                       ),
-                      Gap(20),
+                      Gap(15),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: AppColors.secondary,
+                              fontSize: 14,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Gap(15),
                       CustomButton(
                         text: 'Login',
                         onTap: () {
@@ -132,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
                     child: Text(
                       'Sign Up',
                       style: TextStyle(
-                        color: Color(0xffFFB4AA),
+                        color: AppColors.secondary,
                         fontSize: 16,
                         fontFamily: 'Inter',
                       ),

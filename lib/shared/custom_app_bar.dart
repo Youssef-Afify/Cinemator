@@ -13,13 +13,11 @@ AppBar customAppBar(String title) {
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool goBack;
-  final bool hasSearch;
   final bool hasDrawer;
   const CustomAppBar(
     this.title, {
     super.key,
     this.goBack = false,
-    this.hasSearch = false,
     this.hasDrawer = false,
   });
 
@@ -42,39 +40,27 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          if (goBack || hasSearch || hasDrawer)
+          if (goBack || hasDrawer)
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: preferredSize.height,
-                    width: 20,
-                    child: GestureDetector(
-                      // onTap: Navigator.of(context).pop, TO EDIT
-                      child: Icon(
-                        hasDrawer
-                            ? Icons.menu
-                            : goBack
-                            ? Icons.arrow_back
-                            : null,
-                        color: const Color(0xffE9BCB6),
-                      ),
-                    ),
+              child: SizedBox(
+                height: preferredSize.height,
+                width: 20,
+                child: GestureDetector(
+                  onTap: goBack
+                      ? Navigator.of(context).pop
+                      : hasDrawer
+                      ? () => Scaffold.of(context).openDrawer()
+                      : null,
+                  child: Icon(
+                    hasDrawer
+                        ? Icons.menu
+                        : goBack
+                        ? Icons.arrow_back
+                        : null,
+                    color: AppColors.secondary,
                   ),
-                  SizedBox(
-                    height: preferredSize.height,
-                    width: 20,
-                    child: GestureDetector(
-                      // onTap: Navigator.of(context).pop, TO EDIT
-                      child: Icon(
-                        hasSearch ? Icons.search : null,
-                        color: const Color(0xffE9BCB6),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
         ],

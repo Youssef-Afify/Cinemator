@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/shared/custom_text_field.dart';
@@ -10,7 +11,7 @@ import 'package:task/core/utils/validators/email_validator.dart';
 import 'package:task/core/utils/validators/name_validator.dart';
 import 'package:task/core/utils/validators/password_validator.dart';
 import 'package:task/features/auth/widgets/login_view.dart';
-import 'package:task/widgets/custom_button.dart';
+import 'package:task/shared/custom_button.dart';
 import 'package:task/core/constants/app_colors.dart';
 
 class SignupView extends StatefulWidget {
@@ -54,7 +55,7 @@ class _SignupViewState extends State<SignupView> {
             children: [
               Icon(Icons.movie, color: AppColors.primary, size: 100),
               Text(
-                'CINEMATOR',
+                AppInfo.name,
                 style: TextStyle(
                   color: AppColors.primary,
                   fontFamily: 'Manrope',
@@ -155,7 +156,7 @@ class _SignupViewState extends State<SignupView> {
                     child: Text(
                       'Login',
                       style: TextStyle(
-                        color: Color(0xffFFB4AA),
+                        color: AppColors.secondary,
                         fontSize: 16,
                         fontFamily: 'Inter',
                       ),
