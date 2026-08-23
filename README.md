@@ -1,4 +1,4 @@
-# task
+# Cinemator
 
 A new Flutter project.
 
