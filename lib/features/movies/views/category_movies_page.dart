@@ -2,38 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
-import 'package:task/features/movies/provider/tmdb_provider.dart';
+import 'package:task/core/constants/enums.dart';
 import 'package:task/features/movie_details/views/movie_details_view.dart';
+import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movies/widgets/custom_movie_card.dart';
 import 'package:task/shared/custom_app_bar.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/error_retry.dart';
 import 'package:task/shared/material_page_route.dart';
 
-class MoviesByGenrePage extends StatefulWidget {
-  final int genreId;
-  final String genreName;
+class CategoryMoviesPage extends StatefulWidget {
+  final String title;
+  final CategoryGet category;
 
-  const MoviesByGenrePage({
+  const CategoryMoviesPage({
     super.key,
-    required this.genreId,
-    required this.genreName,
+    required this.title,
+    required this.category,
   });
 
   @override
-  State<MoviesByGenrePage> createState() => _MoviesByGenrePageState();
+  State<CategoryMoviesPage> createState() => _CategoryMoviesPageState();
 }
 
-class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
+class _CategoryMoviesPageState extends State<CategoryMoviesPage> {
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TmdbProvider>().fetchMoviesByGenre(widget.genreId);
-    });
     _scrollController.addListener(_onScroll);
+
+    // The horizontal row on the Movies tab has almost always already
+    // fetched page 1 by the time this screen opens — reuse that instead
+    // of refetching. Only kick off a fetch here if there's genuinely
+    // nothing loaded yet (and nothing already in flight).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final provider = context.read<TmdbProvider>();
+      final hasMovies = (provider.movies[widget.category] ?? []).isNotEmpty;
+      final isLoading = provider.categoryLoading[widget.category] ?? false;
+      if (!hasMovies && !isLoading) {
+        provider.loadMoreForCategory(widget.category);
+      }
+    });
   }
 
   @override
@@ -45,7 +57,7 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.8) {
-      context.read<TmdbProvider>().fetchMoviesByGenre(widget.genreId);
+      context.read<TmdbProvider>().loadMoreForCategory(widget.category);
     }
   }
 
@@ -56,11 +68,16 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
       appBar: AppBar(
         toolbarHeight: 0,
         backgroundColor: AppColors.bg,
-        bottom: CustomAppBar(widget.genreName, goBack: true),
+        bottom: CustomAppBar(widget.title, goBack: true),
       ),
       body: Consumer<TmdbProvider>(
         builder: (context, provider, child) {
-          if (provider.isGenreLoading && provider.genreMovies.isEmpty) {
+          final movies = provider.movies[widget.category] ?? [];
+          final isLoading = provider.categoryLoading[widget.category] ?? false;
+          final error = provider.categoryError[widget.category];
+          final hasMore = provider.categoryHasMore[widget.category] ?? false;
+
+          if (isLoading && movies.isEmpty) {
             return Center(
               child: LoadingAnimationWidget.threeRotatingDots(
                 color: AppColors.primary,
@@ -69,24 +86,20 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
             );
           }
 
-          if (provider.genreErrorMessage != null) {
+          if (error != null && movies.isEmpty) {
             return Center(
               child: ErrorRetry(
-                message: provider.genreErrorMessage!,
-                onRetry: () => provider.fetchMoviesByGenre(
-                  widget.genreId,
-                  refresh: true,
+                message: error,
+                onRetry: () => context.read<TmdbProvider>().loadMoreForCategory(
+                  widget.category,
                 ),
               ),
             );
           }
 
-          if (provider.genreMovies.isEmpty) {
+          if (movies.isEmpty) {
             return const Center(
-              child: CustomText(
-                'No movies found in this genre',
-                color: Colors.white,
-              ),
+              child: CustomText('No movies found', color: Colors.white),
             );
           }
 
@@ -99,14 +112,12 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
               mainAxisSpacing: 8,
             ),
             padding: const EdgeInsets.all(8),
-            itemCount:
-                provider.genreMovies.length +
-                (provider.genreHasMorePages ? 1 : 0),
+            itemCount: movies.length + (hasMore ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == provider.genreMovies.length) {
+              if (index == movies.length) {
                 return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: LoadingAnimationWidget.threeRotatingDots(
                       color: AppColors.primary,
                       size: 30,
@@ -114,12 +125,11 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
                   ),
                 );
               }
-              final movie = provider.genreMovies[index];
+              final movie = movies[index];
               return CustomMovieCard(
                 movie: movie,
-                onTap: () => Navigator.of(
-                  context,
-                ).push(route(MovieDetailsView(movieId: movie.id))),
+                onTap: () =>
+                    Navigator.of(context).push(route(MovieDetailsView(movieId: movie.id))),
               );
             },
           );

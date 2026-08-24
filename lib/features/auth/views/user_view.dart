@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
+import 'package:task/core/utils/pref_helper.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
@@ -34,10 +35,11 @@ class _UserViewState extends State<UserView> {
     super.dispose();
   }
 
-  void _saveInfo() {
-    context.read<UserProvider>().changeInfo(
-      newUsername: _usernameController.text,
-    );
+  void _saveInfo() async {
+    final userProvider = context.read<UserProvider>();
+    userProvider.changeInfo(newUsername: _usernameController.text);
+    await PrefHelper.saveSession(_usernameController.text, userProvider.email);
+    if (!mounted) return;
     FocusScope.of(context).unfocus();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/core/utils/error_message.dart';
 import 'package:task/features/genres/data/genre_model.dart';
 import 'package:task/features/genres/data/genre_repository.dart';
 
@@ -26,7 +27,7 @@ class GenreProvider extends ChangeNotifier {
       genres = await repository.getWithCache('all_genres', repository.getAll);
       errorMessage = null;
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = friendlyErrorMessage(e);
     } finally {
       isLoading = false;
       notifyListeners();

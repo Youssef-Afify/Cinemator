@@ -11,6 +11,7 @@ import 'package:task/core/utils/validators/confirm_validator.dart';
 import 'package:task/core/utils/validators/email_validator.dart';
 import 'package:task/core/utils/validators/name_validator.dart';
 import 'package:task/core/utils/validators/password_validator.dart';
+import 'package:task/core/utils/pref_helper.dart';
 import 'package:task/features/auth/widgets/login_view.dart';
 import 'package:task/shared/custom_button.dart';
 import 'package:task/core/constants/app_colors.dart';
@@ -117,12 +118,16 @@ class _SignupViewState extends State<SignupView> {
                       Gap(30),
                       CustomButton(
                         text: 'Sign Up',
-                        onTap: () {
+                        onTap: () async {
                           if (_formKey.currentState!.validate()) {
+                            final name = _nameController.text.trim();
+                            final email = _emailController.text.trim();
                             context.read<UserProvider>().changeInfo(
-                              newUsername: _nameController.text.trim(),
-                              newEmail: _emailController.text.trim(),
+                              newUsername: name,
+                              newEmail: email,
                             );
+                            await PrefHelper.saveSession(name, email);
+                            if (!context.mounted) return;
                             Navigator.of(
                               context,
                             ).pushReplacement(route(LoginView()));

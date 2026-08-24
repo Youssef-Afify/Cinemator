@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
+import 'package:task/env.dart';
 import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/movies/data/movie_repository.dart';
 import 'package:task/features/movies/provider/favorites_provider.dart';
@@ -32,18 +33,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(
-          create: (context) => TmdbProvider(
-            repository: MovieRepository(
-              apiKey: 'c7a80ea5a4d5126abefa10ddc02f2a55',
-            ),
-          ),
+          create: (context) =>
+              TmdbProvider(repository: MovieRepository(apiKey: Env.apiKey)),
         ),
         ChangeNotifierProvider(
-          create: (context) => GenreProvider(
-            repository: GenreRepository(
-              apiKey: 'c7a80ea5a4d5126abefa10ddc02f2a55',
-            ),
-          ),
+          create: (context) =>
+              GenreProvider(repository: GenreRepository(apiKey: Env.apiKey)),
         ),
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),

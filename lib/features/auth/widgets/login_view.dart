@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/constants/app_info.dart';
+import 'package:task/core/utils/pref_helper.dart';
 import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/root.dart';
@@ -108,11 +109,16 @@ class _LoginViewState extends State<LoginView> {
                       Gap(15),
                       CustomButton(
                         text: 'Login',
-                        onTap: () {
+                        onTap: () async {
                           if (_formKey.currentState!.validate()) {
-                            context.read<UserProvider>().changeInfo(
-                              newEmail: _emailController.text.trim(),
+                            final email = _emailController.text.trim();
+                            final userProvider = context.read<UserProvider>();
+                            userProvider.changeInfo(newEmail: email);
+                            await PrefHelper.saveSession(
+                              userProvider.username,
+                              email,
                             );
+                            if (!context.mounted) return;
                             Navigator.of(
                               context,
                             ).pushReplacement(route(Root()));

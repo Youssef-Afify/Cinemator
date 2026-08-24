@@ -8,6 +8,7 @@ import 'package:task/features/movies/data/movie_model.dart';
 import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movies/widgets/custom_movie_card.dart';
 import 'package:task/shared/custom_text.dart';
+import 'package:task/shared/error_retry.dart';
 
 class CategorySection extends StatelessWidget {
   final String title;
@@ -84,21 +85,13 @@ class CategorySection extends StatelessWidget {
               }
 
               if (error != null && categoryMovies.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText('Error: $error', color: Colors.white70),
-                      const Gap(12),
-                      ElevatedButton(
-                        onPressed: () => context
-                            .read<TmdbProvider>()
-                            .fetchMoviesPage(category: category, page: 1),
-                        child: const CustomText('Retry'),
-                      ),
-                    ],
+                return Center(
+                  child: ErrorRetry(
+                    message: error,
+                    onRetry: () => context.read<TmdbProvider>().fetchMoviesPage(
+                      category: category,
+                      page: 1,
+                    ),
                   ),
                 );
               }

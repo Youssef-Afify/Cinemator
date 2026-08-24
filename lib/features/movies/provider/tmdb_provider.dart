@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task/core/constants/enums.dart';
+import 'package:task/core/utils/error_message.dart';
 import '../../movie_details/data/movie_details_model.dart';
 import '../data/movie_model.dart';
 import '../data/movie_repository.dart';
@@ -93,7 +94,7 @@ class TmdbProvider extends ChangeNotifier {
       currentPage++;
       errorMessage = null;
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = friendlyErrorMessage(e);
     } finally {
       isLoading = false;
       notifyListeners();
@@ -122,7 +123,56 @@ class TmdbProvider extends ChangeNotifier {
       categoryHasMore[category] = page < response.totalPages;
       categoryError[category] = null;
     } catch (e) {
-      categoryError[category] = e.toString();
+      categoryError[category] = friendlyErrorMessage(e);
+    } finally {
+      categoryLoading[category] = false;
+      notifyListeners();
+    }
+  }
+
+  // Refetches page 1 for every category, unconditionally replacing
+  // whatever's currently loaded — this is what pull-to-refresh calls.
+  //
+  // fetchMoviesPage itself already always hits the network and replaces
+  // the list on every call, so no separate "refresh" flag is needed on it;
+  // what was actually missing was a caller that doesn't skip already-loaded
+  // categories the way MoviesView's initial load does (see MoviesView,
+  // which only calls fetchMoviesPage for a category if it's empty, so the
+  // same data sticks around for the rest of the app session unless the
+  // user explicitly asks for new data).
+  Future<void> refreshAllCategories() {
+    return Future.wait([
+      for (final category in CategoryGet.values)
+        fetchMoviesPage(category: category, page: 1),
+    ]);
+  }
+  // Kept separate from fetchMoviesPage (which replaces page 1 for the
+  // horizontal row) so the two don't stomp on each other's pagination —
+  // this one continues from whatever page fetchMoviesPage already loaded,
+  // so opening "View All" doesn't refetch page 1 from scratch.
+  Future<void> loadMoreForCategory(CategoryGet category) async {
+    final alreadyLoading = categoryLoading[category] ?? false;
+    final hasMore = categoryHasMore[category] ?? true;
+    if (alreadyLoading || !hasMore) return;
+
+    categoryLoading[category] = true;
+    categoryError[category] = null;
+    notifyListeners();
+
+    final nextPage = (categoryPage[category] ?? 0) + 1;
+
+    try {
+      final response = await repository.getByCategory(
+        page: nextPage,
+        category: category,
+      );
+      movies[category] = [...(movies[category] ?? []), ...response.results];
+      categoryPage[category] = nextPage;
+      categoryTotalPages[category] = response.totalPages;
+      categoryHasMore[category] = nextPage < response.totalPages;
+      categoryError[category] = null;
+    } catch (e) {
+      categoryError[category] = friendlyErrorMessage(e);
     } finally {
       categoryLoading[category] = false;
       notifyListeners();
@@ -156,7 +206,7 @@ class TmdbProvider extends ChangeNotifier {
       searchErrorMessage = null;
     } catch (e) {
       if (query != currentQuery) return;
-      searchErrorMessage = e.toString();
+      searchErrorMessage = friendlyErrorMessage(e);
       searchResults = [];
     } finally {
       if (query == currentQuery) {
@@ -178,7 +228,7 @@ class TmdbProvider extends ChangeNotifier {
     try {
       return await repository.getMovieDetails(id);
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = friendlyErrorMessage(e);
       notifyListeners();
       return null;
     }
@@ -213,7 +263,7 @@ class TmdbProvider extends ChangeNotifier {
       genreCurrentPage++;
       genreErrorMessage = null;
     } catch (e) {
-      genreErrorMessage = e.toString();
+      genreErrorMessage = friendlyErrorMessage(e);
     } finally {
       isGenreLoading = false;
       notifyListeners();

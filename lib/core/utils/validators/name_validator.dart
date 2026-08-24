@@ -1,4 +1,4 @@
-RegExp nameExp = RegExp(r'^[a-zA-Z]{2,}$');
+RegExp nameExp = RegExp(r'^[a-zA-Z\s]{2,}$');
 
 String? nameValidator(String? value) {
   if (value == null || !nameExp.hasMatch(value)) {

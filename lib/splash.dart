@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/constants/app_info.dart';
+import 'package:task/core/utils/pref_helper.dart';
+import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/features/auth/views/auth_view.dart';
+import 'package:task/root.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -18,11 +22,31 @@ class _SplashState extends State<Splash> {
   @override
   void initState() {
     super.initState();
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    // Run the fixed splash delay and the session lookup in parallel, so
+    // checking for a saved session never makes the splash feel longer
+    // than its usual branding delay.
+    final results = await Future.wait([
+      Future.delayed(const Duration(seconds: 3)),
+      PrefHelper.getSession(),
+    ]);
+
     if (!mounted) return;
-    Future.delayed(Duration(seconds: 3), () {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(route(AuthView()));
-    });
+
+    final session = results[1] as SessionData?;
+
+    if (session != null) {
+      context.read<UserProvider>().changeInfo(
+        newUsername: session.name,
+        newEmail: session.email,
+      );
+      Navigator.of(context).pushReplacement(route(const Root()));
+    } else {
+      Navigator.of(context).pushReplacement(route(const AuthView()));
+    }
   }
 
   @override

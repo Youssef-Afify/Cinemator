@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
@@ -8,6 +7,7 @@ import 'package:task/features/genres/views/movies_by_genre_page.dart';
 import 'package:task/features/genres/widgets/genre_tile.dart';
 import 'package:task/shared/custom_app_bar.dart';
 import 'package:task/shared/custom_text.dart';
+import 'package:task/shared/error_retry.dart';
 import 'package:task/shared/material_page_route.dart';
 
 class GenresView extends StatefulWidget {
@@ -17,17 +17,28 @@ class GenresView extends StatefulWidget {
   State<GenresView> createState() => _GenresViewState();
 }
 
-class _GenresViewState extends State<GenresView> {
+class _GenresViewState extends State<GenresView>
+    with AutomaticKeepAliveClientMixin<GenresView> {
+  // Same reasoning as MoviesView: without this, switching tabs and back
+  // can dispose/rebuild this screen and silently re-trigger loadGenres().
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GenreProvider>().loadGenres();
+      if (!mounted) return;
+      final provider = context.read<GenreProvider>();
+      if (provider.genres.isEmpty) {
+        provider.loadGenres();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // required by AutomaticKeepAliveClientMixin
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: CustomAppBar('Genres'),
@@ -46,19 +57,9 @@ class _GenresViewState extends State<GenresView> {
           // Error state
           if (provider.errorMessage != null) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    'Error: ${provider.errorMessage}',
-                    color: Colors.white,
-                  ),
-                  const Gap(16),
-                  ElevatedButton(
-                    onPressed: () => provider.loadGenres(refresh: true),
-                    child: const CustomText('Retry'),
-                  ),
-                ],
+              child: ErrorRetry(
+                message: provider.errorMessage!,
+                onRetry: () => provider.loadGenres(refresh: true),
               ),
             );
           }
@@ -71,33 +72,39 @@ class _GenresViewState extends State<GenresView> {
           }
 
           // Success state
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.7,
-              ),
-              itemCount: provider.genres.length,
-              itemBuilder: (context, index) {
-                final genre = provider.genres[index];
-                return GenreTile(
-                  genre: genre,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      route(
-                        MoviesByGenrePage(
-                          genreId: genre.id,
-                          genreName: genre.name,
+          return RefreshIndicator(
+            onRefresh: () => provider.loadGenres(refresh: true),
+            color: AppColors.primary,
+            backgroundColor: AppColors.bg,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1.7,
+                ),
+                itemCount: provider.genres.length,
+                itemBuilder: (context, index) {
+                  final genre = provider.genres[index];
+                  return GenreTile(
+                    genre: genre,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        route(
+                          MoviesByGenrePage(
+                            genreId: genre.id,
+                            genreName: genre.name,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           );
         },

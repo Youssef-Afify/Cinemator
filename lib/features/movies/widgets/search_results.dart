@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
@@ -7,6 +6,7 @@ import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movie_details/views/movie_details_view.dart';
 import 'package:task/features/movies/widgets/custom_movie_card.dart';
 import 'package:task/shared/custom_text.dart';
+import 'package:task/shared/error_retry.dart';
 
 class SearchResults extends StatelessWidget {
   final TmdbProvider provider;
@@ -30,21 +30,10 @@ class SearchResults extends StatelessWidget {
     if (provider.searchErrorMessage != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 48),
-        child: Column(
-          children: [
-            Text(
-              'Error: ${provider.searchErrorMessage}',
-              style: const TextStyle(color: Colors.white),
-              textAlign: TextAlign.center,
-            ),
-            const Gap(16),
-            ElevatedButton(
-              onPressed: () => context.read<TmdbProvider>().searchMovies(
-                provider.currentQuery,
-              ),
-              child: const CustomText('Retry'),
-            ),
-          ],
+        child: ErrorRetry(
+          message: provider.searchErrorMessage!,
+          onRetry: () =>
+              context.read<TmdbProvider>().searchMovies(provider.currentQuery),
         ),
       );
     }
