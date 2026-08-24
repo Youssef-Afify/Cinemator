@@ -14,8 +14,6 @@ class GenreTile extends StatefulWidget {
 }
 
 class _GenreTileState extends State<GenreTile> {
-  // Shared across every tile instance so scrolling the grid never
-  // re-fetches a backdrop for a genre we've already resolved.
   static final Map<int, String?> _backdropCache = {};
 
   String? _backdropUrl;
@@ -59,8 +57,6 @@ class _GenreTileState extends State<GenreTile> {
     }
   }
 
-  // Deterministic fallback color per genre, so a tile without art (or
-  // still loading) still looks intentional rather than blank.
   static const _fallbackPalette = [
     Color(0xFF2A1A3A),
     Color(0xFF3A1A1A),
@@ -81,8 +77,6 @@ class _GenreTileState extends State<GenreTile> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Background layer: poster/backdrop once loaded, else a
-            // themed solid so the tile never flashes blank.
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               child: (_loaded && _backdropUrl != null)
@@ -98,9 +92,6 @@ class _GenreTileState extends State<GenreTile> {
                       color: _fallbackColor,
                     ),
             ),
-            // Directional scrim: near-opaque on the left where the
-            // label sits, fading out toward the right so the art
-            // still reads through.
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

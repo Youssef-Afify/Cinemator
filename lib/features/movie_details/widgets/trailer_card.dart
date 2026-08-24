@@ -45,16 +45,12 @@ class TrailerCardState extends State<TrailerCard> {
 
   @override
   void dispose() {
-    // v10 renamed dispose() -> close()
     _controller?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Lazy-loaded: the controller (and its underlying WebView player) is
-    // only created once the user actually taps play, rather than eagerly
-    // for every movie details screen that happens to have a trailer.
     if (_isPlaying && _controller != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(14),

@@ -11,21 +11,21 @@ import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/error_retry.dart';
 import 'package:task/shared/material_page_route.dart';
 
-class CategoryMoviesPage extends StatefulWidget {
+class CategoryMoviesView extends StatefulWidget {
   final String title;
   final CategoryGet category;
 
-  const CategoryMoviesPage({
+  const CategoryMoviesView({
     super.key,
     required this.title,
     required this.category,
   });
 
   @override
-  State<CategoryMoviesPage> createState() => _CategoryMoviesPageState();
+  State<CategoryMoviesView> createState() => _CategoryMoviesViewState();
 }
 
-class _CategoryMoviesPageState extends State<CategoryMoviesPage> {
+class _CategoryMoviesViewState extends State<CategoryMoviesView> {
   final ScrollController _scrollController = ScrollController();
 
   @override

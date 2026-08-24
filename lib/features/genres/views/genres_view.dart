@@ -19,8 +19,6 @@ class GenresView extends StatefulWidget {
 
 class _GenresViewState extends State<GenresView>
     with AutomaticKeepAliveClientMixin<GenresView> {
-  // Same reasoning as MoviesView: without this, switching tabs and back
-  // can dispose/rebuild this screen and silently re-trigger loadGenres().
   @override
   bool get wantKeepAlive => true;
 
@@ -38,13 +36,13 @@ class _GenresViewState extends State<GenresView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // required by AutomaticKeepAliveClientMixin
+    super.build(context); // required
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: CustomAppBar('Genres'),
       body: Consumer<GenreProvider>(
         builder: (context, provider, child) {
-          // Loading state
+
           if (provider.isLoading && provider.genres.isEmpty) {
             return Center(
               child: LoadingAnimationWidget.threeRotatingDots(
@@ -54,7 +52,6 @@ class _GenresViewState extends State<GenresView>
             );
           }
 
-          // Error state
           if (provider.errorMessage != null) {
             return Center(
               child: ErrorRetry(
@@ -64,14 +61,12 @@ class _GenresViewState extends State<GenresView>
             );
           }
 
-          // Empty state
           if (provider.genres.isEmpty) {
             return const Center(
               child: CustomText('No genres found', color: Colors.white),
             );
           }
 
-          // Success state
           return RefreshIndicator(
             onRefresh: () => provider.loadGenres(refresh: true),
             color: AppColors.primary,

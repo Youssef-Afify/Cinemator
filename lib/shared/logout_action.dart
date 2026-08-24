@@ -5,10 +5,6 @@ import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/features/auth/views/auth_view.dart';
 
-// Clears the signed-in user's info, clears the persisted session (so
-// auto-login on next launch doesn't fire), resets the auth flow back to
-// login, and replaces the whole navigation stack with AuthView so the
-// user can't navigate back into a logged-out screen afterward.
 Future<void> performLogout(BuildContext context) async {
   context.read<UserProvider>().changeInfo(
     newUsername: 'N/A',

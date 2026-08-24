@@ -26,9 +26,6 @@ class _SplashState extends State<Splash> {
   }
 
   Future<void> _bootstrap() async {
-    // Run the fixed splash delay and the session lookup in parallel, so
-    // checking for a saved session never makes the splash feel longer
-    // than its usual branding delay.
     final results = await Future.wait([
       Future.delayed(const Duration(seconds: 3)),
       PrefHelper.getSession(),

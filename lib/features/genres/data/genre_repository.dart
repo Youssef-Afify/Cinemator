@@ -61,7 +61,7 @@ class GenreRepository {
 
     final List<dynamic> genresList = data['genres'] ?? [];
     if (genresList.isEmpty) {
-      return []; // Return empty list instead of throwing
+      return [];
     }
 
     return List.generate(

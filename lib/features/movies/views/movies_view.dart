@@ -10,7 +10,7 @@ import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movie_details/views/movie_details_view.dart';
 import 'package:task/features/movies/widgets/category_section.dart';
 import 'package:task/features/movies/widgets/search_results.dart';
-import 'package:task/features/movies/views/category_movies_page.dart';
+import 'package:task/features/movies/views/category_movies_view.dart';
 import 'package:task/shared/app_drawer.dart';
 import 'package:task/shared/custom_app_bar.dart';
 import 'package:task/shared/material_page_route.dart';
@@ -82,7 +82,7 @@ class _MoviesViewState extends State<MoviesView>
 
   void _viewAll(String title, CategoryGet category) {
     Navigator.of(context).push(
-      route(CategoryMoviesPage(title: title, category: category)),
+      route(CategoryMoviesView(title: title, category: category)),
     );
   }
 
@@ -98,7 +98,7 @@ class _MoviesViewState extends State<MoviesView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // required by AutomaticKeepAliveClientMixin
+    super.build(context); // required
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(

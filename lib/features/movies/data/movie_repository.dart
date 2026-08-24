@@ -79,7 +79,6 @@ class MovieRepository {
     String key,
     Future<TmdbModel> Function() fetch,
   ) async {
-    // Check if cache is valid
     if (_cache.containsKey(key)) {
       final entry = _cache[key]!;
       if (DateTime.now().difference(entry.timestamp) < cacheDuration) {
@@ -87,7 +86,6 @@ class MovieRepository {
       }
     }
 
-    // Fetch fresh data
     final data = await fetch();
     _cache[key] = CacheEntry(data: data, timestamp: DateTime.now());
     return data;

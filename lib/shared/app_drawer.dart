@@ -8,6 +8,7 @@ import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/drawer_tile.dart';
 import 'package:task/shared/logout_action.dart';
 import 'package:task/features/about/views/about_page.dart';
+import 'package:task/shared/material_page_route.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -66,10 +67,8 @@ class AppDrawer extends StatelessWidget {
               icon: Icons.info_outline,
               label: 'About Page',
               onTap: () {
-                Navigator.of(context).pop(); // close the drawer first
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const AboutPage()));
+                Navigator.of(context).pop();
+                Navigator.of(context).push(route(const AboutPage()));
               },
             ),
             DrawerTile(

@@ -10,10 +10,6 @@ class CustomMovieCard extends StatelessWidget {
   final double width;
   final double height;
 
-  // Optional favorite-toggle affordance: when a callback is provided, a
-  // heart button renders in the top-left corner (mirroring the rating
-  // pill's top-right position) so a card can be favorited/unfavorited
-  // without needing a whole separate screen.
   final bool isFavorite;
   final VoidCallback? onFavoriteToggle;
 
@@ -63,7 +59,6 @@ class CustomMovieCard extends StatelessWidget {
                             ),
                     ),
                   ),
-                  // Subtle bottom gradient so a badge/title never fights the art.
                   Positioned(
                     left: 0,
                     right: 0,
@@ -85,7 +80,6 @@ class CustomMovieCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Rating pill.
                   Positioned(
                     top: 10,
                     right: 10,
@@ -122,8 +116,6 @@ class CustomMovieCard extends StatelessWidget {
                       top: 10,
                       left: 10,
                       child: GestureDetector(
-                        // Own hit target so tapping the heart doesn't also
-                        // trigger the card's onTap (which opens details).
                         onTap: onFavoriteToggle,
                         child: Container(
                           padding: const EdgeInsets.all(6),
@@ -154,7 +146,6 @@ class CustomMovieCard extends StatelessWidget {
               maxLines: 1,
             ),
             const Gap(2),
-            // Swap for a genre string here if MovieModel exposes one.
             CustomText(
               movie.releaseYear,
               color: AppColors.neutral,

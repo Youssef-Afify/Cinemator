@@ -7,6 +7,7 @@ import 'package:task/features/movie_details/views/movie_details_view.dart';
 import 'package:task/features/movies/widgets/custom_movie_card.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/error_retry.dart';
+import 'package:task/shared/material_page_route.dart';
 
 class SearchResults extends StatelessWidget {
   final TmdbProvider provider;
@@ -61,11 +62,9 @@ class SearchResults extends StatelessWidget {
         final movie = provider.searchResults[index];
         return CustomMovieCard(
           movie: movie,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => MovieDetailsView(movieId: movie.id),
-            ),
-          ),
+          onTap: () => Navigator.of(
+            context,
+          ).push(route(MovieDetailsView(movieId: movie.id))),
         );
       },
     );
