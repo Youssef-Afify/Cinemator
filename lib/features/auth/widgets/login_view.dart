@@ -6,6 +6,7 @@ import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/root.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/core/utils/validators/email_validator.dart';
@@ -48,23 +49,19 @@ class _LoginViewState extends State<LoginView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.movie, color: AppColors.primary, size: 100),
-              Text(
+              CustomText(
                 AppInfo.name,
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontFamily: 'Manrope',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                ),
+                color: AppColors.primary,
+                size: 24,
+                weight: FontWeight.w900,
+                family: 'Manrope',
               ),
-              Text(
+              CustomText(
                 'Sign in to continue your journey.',
-                style: TextStyle(
-                  color: AppColors.neutral,
-                  fontFamily: 'Inter',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w100,
-                ),
+                color: AppColors.neutral,
+                size: 18,
+                weight: FontWeight.w100,
+                family: 'Inter',
               ),
               Gap(20),
               Container(
@@ -100,13 +97,11 @@ class _LoginViewState extends State<LoginView> {
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {},
-                          child: Text(
+                          child: CustomText(
                             'Forgot Password?',
-                            style: TextStyle(
-                              color: AppColors.secondary,
-                              fontSize: 14,
-                              fontFamily: 'Inter',
-                            ),
+                            color: AppColors.secondary,
+                            size: 14,
+                            family: 'Inter',
                           ),
                         ),
                       ),
@@ -132,26 +127,22 @@ class _LoginViewState extends State<LoginView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  CustomText(
                     "Don't have an account?",
-                    style: TextStyle(
-                      color: AppColors.neutral,
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                    ),
+                    color: AppColors.neutral,
+                    size: 16,
+                    family: 'Inter',
                   ),
                   Gap(10),
                   GestureDetector(
                     onTap: () => context.read<AuthProvider>().changeIndex(
                       AuthEnum.signup,
                     ),
-                    child: Text(
+                    child: CustomText(
                       'Sign Up',
-                      style: TextStyle(
-                        color: AppColors.secondary,
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                      ),
+                      color: AppColors.secondary,
+                      size: 16,
+                      family: 'Inter',
                     ),
                   ),
                 ],

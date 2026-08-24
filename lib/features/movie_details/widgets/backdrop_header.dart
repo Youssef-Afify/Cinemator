@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/features/movie_details/data/movie_details_model.dart';
+import 'package:task/shared/custom_text.dart';
 
 class BackdropHeader extends StatelessWidget {
   final MovieDetailsModel movie;
@@ -28,10 +29,7 @@ class BackdropHeader extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.1),
-                    AppColors.bg,
-                  ],
+                  colors: [Colors.black.withValues(alpha: 0.1), AppColors.bg],
                   stops: const [0.4, 1.0],
                 ),
               ),
@@ -79,12 +77,10 @@ class BackdropHeader extends StatelessWidget {
                         color: Color(0xFFFFC940),
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      CustomText(
                         movie.formattedRating,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        color: Colors.white,
+                        weight: FontWeight.w700,
                       ),
                     ],
                   ),

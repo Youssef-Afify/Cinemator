@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
@@ -6,6 +7,7 @@ import 'package:task/core/constants/enums.dart';
 import 'package:task/features/movies/data/movie_model.dart';
 import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movies/widgets/custom_movie_card.dart';
+import 'package:task/shared/custom_text.dart';
 
 class CategorySection extends StatelessWidget {
   final String title;
@@ -31,13 +33,11 @@ class CategorySection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              CustomText(
                 title,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.grey.shade300,
-                ),
+                color: Colors.grey.shade300,
+                size: 26,
+                weight: FontWeight.w800,
               ),
               GestureDetector(
                 onTap: onViewAll,
@@ -54,14 +54,18 @@ class CategorySection extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 2),
-                    Icon(Icons.chevron_right, size: 16, color: AppColors.secondary),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: AppColors.secondary,
+                    ),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const Gap(16),
         SizedBox(
           height: 280,
           child: Consumer<TmdbProvider>(
@@ -86,17 +90,13 @@ class CategorySection extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Error: $error',
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      const SizedBox(height: 12),
+                      CustomText('Error: $error', color: Colors.white70),
+                      const Gap(12),
                       ElevatedButton(
-                        onPressed: () => context.read<TmdbProvider>().fetchMoviesPage(
-                          category: category,
-                          page: 1,
-                        ),
-                        child: const Text('Retry'),
+                        onPressed: () => context
+                            .read<TmdbProvider>()
+                            .fetchMoviesPage(category: category, page: 1),
+                        child: const CustomText('Retry'),
                       ),
                     ],
                   ),
@@ -106,10 +106,7 @@ class CategorySection extends StatelessWidget {
               if (categoryMovies.isEmpty) {
                 return const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'No movies found',
-                    style: TextStyle(color: Colors.white70),
-                  ),
+                  child: CustomText('No movies found', color: Colors.white70),
                 );
               }
 

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/auth/provider/auth_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/core/utils/validators/confirm_validator.dart';
@@ -54,23 +55,19 @@ class _SignupViewState extends State<SignupView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.movie, color: AppColors.primary, size: 100),
-              Text(
+              CustomText(
                 AppInfo.name,
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontFamily: 'Manrope',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                ),
+                color: AppColors.primary,
+                size: 24,
+                weight: FontWeight.w900,
+                family: 'Manrope',
               ),
-              Text(
+              CustomText(
                 'Join the definitive cinema experience.',
-                style: TextStyle(
-                  color: AppColors.neutral,
-                  fontFamily: 'Inter',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w100,
-                ),
+                color: AppColors.neutral,
+                size: 18,
+                weight: FontWeight.w100,
+                family: 'Inter',
               ),
               Gap(20),
               Container(
@@ -140,26 +137,22 @@ class _SignupViewState extends State<SignupView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  CustomText(
                     'Already have an account?',
-                    style: TextStyle(
-                      color: AppColors.neutral,
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                    ),
+                    color: AppColors.neutral,
+                    size: 16,
+                    family: 'Inter',
                   ),
                   Gap(10),
                   GestureDetector(
                     onTap: () => context.read<AuthProvider>().changeIndex(
                       AuthEnum.login,
                     ),
-                    child: Text(
+                    child: CustomText(
                       'Login',
-                      style: TextStyle(
-                        color: AppColors.secondary,
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                      ),
+                      color: AppColors.secondary,
+                      size: 16,
+                      family: 'Inter',
                     ),
                   ),
                 ],

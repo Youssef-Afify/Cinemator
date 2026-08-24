@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/features/movies/data/movie_model.dart';
+import 'package:task/shared/custom_text.dart';
 
 class CustomMovieCard extends StatelessWidget {
   final MovieModel movie;
@@ -105,13 +107,11 @@ class CustomMovieCard extends StatelessWidget {
                             color: Color(0xFFFFC940),
                           ),
                           const SizedBox(width: 3),
-                          Text(
+                          CustomText(
                             movie.formattedRating,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
+                            color: Colors.white,
+                            size: 12,
+                            weight: FontWeight.w700,
                           ),
                         ],
                       ),
@@ -144,26 +144,22 @@ class CustomMovieCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
+            const Gap(10),
+            CustomText(
               movie.title,
-              maxLines: 1,
+              color: Colors.white,
+              size: 15,
+              weight: FontWeight.w700,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
+              maxLines: 1,
             ),
-            const SizedBox(height: 2),
+            const Gap(2),
             // Swap for a genre string here if MovieModel exposes one.
-            Text(
+            CustomText(
               movie.releaseYear,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.neutral,
-              ),
+              color: AppColors.neutral,
+              size: 13,
+              weight: FontWeight.w500,
             ),
           ],
         ),

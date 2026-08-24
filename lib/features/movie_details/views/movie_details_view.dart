@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/features/movie_details/widgets/backdrop_header.dart';
@@ -6,12 +7,12 @@ import 'package:task/features/movie_details/widgets/cast_tile.dart';
 import 'package:task/features/movie_details/widgets/error_state.dart';
 import 'package:task/features/movie_details/widgets/genre_chip.dart';
 import 'package:task/features/movie_details/widgets/meta_row.dart';
-import 'package:task/features/movie_details/widgets/section_title.dart';
 import 'package:task/features/movie_details/widgets/trailer_card.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/features/movie_details/data/movie_details_model.dart';
 import 'package:task/features/movies/provider/favorites_provider.dart';
 import 'package:task/features/movies/provider/tmdb_provider.dart';
+import 'package:task/shared/custom_text.dart';
 
 class MovieDetailsView extends StatefulWidget {
   final int movieId;
@@ -61,30 +62,30 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CustomText(
                         movie.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        color: Colors.white,
+                        size: 26,
+                        weight: FontWeight.w800,
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       MetaRow(movie: movie),
                       if ((movie.genres ?? []).isNotEmpty) ...[
-                        const SizedBox(height: 14),
+                        const Gap(14),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
                           children: movie.genres!
                               .map(
-                                (g) =>
-                                    GenreChip(name: g.name, color: AppColors.secondary),
+                                (g) => GenreChip(
+                                  name: g.name,
+                                  color: AppColors.secondary,
+                                ),
                               )
                               .toList(),
                         ),
                       ],
-                      const SizedBox(height: 24),
+                      const Gap(24),
                       Consumer<FavoritesProvider>(
                         builder: (context, favoritesProvider, child) {
                           final isFavorite = favoritesProvider.isFavorite(
@@ -101,14 +102,12 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                                     : Icons.favorite_border,
                                 color: Colors.white,
                               ),
-                              label: Text(
+                              label: CustomText(
                                 isFavorite
                                     ? 'Added to Favorites'
                                     : 'Add to Favorites',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                color: Colors.white,
+                                weight: FontWeight.w700,
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
@@ -124,9 +123,14 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                         },
                       ),
                       if ((movie.overview ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 32),
-                        const SectionTitle('Synopsis'),
-                        const SizedBox(height: 10),
+                        const Gap(32),
+                        const CustomText(
+                          'Synopsis',
+                          color: Colors.white,
+                          size: 18,
+                          weight: FontWeight.w800,
+                        ),
+                        const Gap(10),
                         Text(
                           movie.overview!,
                           style: TextStyle(
@@ -137,9 +141,14 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                         ),
                       ],
                       if ((movie.cast ?? []).isNotEmpty) ...[
-                        const SizedBox(height: 32),
-                        const SectionTitle('Top Cast'),
-                        const SizedBox(height: 14),
+                        const Gap(32),
+                        const CustomText(
+                          'Top Cast',
+                          color: Colors.white,
+                          size: 18,
+                          weight: FontWeight.w800,
+                        ),
+                        const Gap(14),
                         SizedBox(
                           height: 96,
                           child: ListView.separated(
@@ -155,9 +164,14 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                         ),
                       ],
                       if (movie.trailer != null) ...[
-                        const SizedBox(height: 32),
-                        const SectionTitle('Trailers & More'),
-                        const SizedBox(height: 14),
+                        const Gap(32),
+                        const CustomText(
+                          'Trailers & More',
+                          color: Colors.white,
+                          size: 18,
+                          weight: FontWeight.w800,
+                        ),
+                        const Gap(14),
                         TrailerCard(video: movie.trailer!),
                       ],
                     ],

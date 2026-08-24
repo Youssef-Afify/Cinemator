@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
@@ -6,6 +7,7 @@ import 'package:task/features/genres/provider/genre_provider.dart';
 import 'package:task/features/genres/views/movies_by_genre_page.dart';
 import 'package:task/features/genres/widgets/genre_tile.dart';
 import 'package:task/shared/custom_app_bar.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/material_page_route.dart';
 
 class GenresView extends StatefulWidget {
@@ -47,14 +49,14 @@ class _GenresViewState extends State<GenresView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  CustomText(
                     'Error: ${provider.errorMessage}',
-                    style: TextStyle(color: Colors.white),
+                    color: Colors.white,
                   ),
-                  const SizedBox(height: 16),
+                  const Gap(16),
                   ElevatedButton(
                     onPressed: () => provider.loadGenres(refresh: true),
-                    child: const Text('Retry'),
+                    child: const CustomText('Retry'),
                   ),
                 ],
               ),
@@ -64,10 +66,7 @@ class _GenresViewState extends State<GenresView> {
           // Empty state
           if (provider.genres.isEmpty) {
             return const Center(
-              child: Text(
-                'No genres found',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: CustomText('No genres found', color: Colors.white),
             );
           }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task/features/movie_details/data/helpers/video_model.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class TrailerCard extends StatefulWidget {
@@ -23,7 +24,7 @@ class TrailerCardState extends State<TrailerCard> {
     if (!widget.video.isYoutube) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("This trailer isn't available for in-app playback"),
+          content: CustomText("This trailer isn't available for in-app playback"),
         ),
       );
       return;

@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task/core/constants/app_colors.dart';
-
-AppBar customAppBar(String title) {
-  return AppBar(
-    foregroundColor: Colors.white,
-    backgroundColor: AppColors.primary,
-    centerTitle: true,
-    title: Text(title),
-  );
-}
+import 'package:task/shared/custom_text.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -30,14 +22,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Stack(
         children: [
           Center(
-            child: Text(
+            child: CustomText(
               title,
-              style: TextStyle(
-                color: AppColors.primary,
-                fontFamily: 'Manrope',
-                fontWeight: FontWeight.w800,
-                fontSize: 24,
-              ),
+              color: AppColors.primary,
+              size: 24,
+              weight: FontWeight.w800,
+              family: 'Manrope',
             ),
           ),
           if (goBack || hasDrawer)

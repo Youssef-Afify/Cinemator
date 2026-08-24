@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
 import 'package:task/shared/logout_action.dart';
 import 'package:task/shared/custom_button.dart';
@@ -51,16 +52,17 @@ class _UserViewState extends State<UserView> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              const SizedBox(height: 48),
+              const Gap(48),
               CircleAvatar(
                 radius: 55,
                 backgroundColor: AppColors.primary,
                 child: const Icon(Icons.person, size: 60, color: Colors.white),
               ),
               Gap(20),
-              Text(
+              CustomText(
                 context.watch<UserProvider>().username,
-                style: TextStyle(fontSize: 32, color: Colors.white),
+                color: Colors.white,
+                size: 32,
               ),
               Gap(36),
               CustomTextField(
@@ -68,14 +70,14 @@ class _UserViewState extends State<UserView> {
                 controller: _usernameController,
                 prefixIcon: Icons.person_outline,
               ),
-              const SizedBox(height: 16),
+              const Gap(16),
               CustomTextField(
                 label: 'Email',
                 controller: _emailController,
                 prefixIcon: Icons.email_outlined,
                 enabled: false,
               ),
-              const SizedBox(height: 40),
+              const Gap(40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

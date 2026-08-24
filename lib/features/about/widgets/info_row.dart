@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task/core/constants/app_colors.dart';
+import 'package:task/shared/custom_text.dart';
 
 class InfoRow extends StatelessWidget {
   final String label;
@@ -12,14 +13,12 @@ class InfoRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: AppColors.primary, fontSize: 13.5)),
-        Text(
+        CustomText(label, color: AppColors.primary, size: 13.5),
+        CustomText(
           value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-          ),
+          color: Colors.white,
+          size: 13.5,
+          weight: FontWeight.w600,
         ),
       ],
     );

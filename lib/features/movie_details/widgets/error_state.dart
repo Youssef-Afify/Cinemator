@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:task/shared/custom_text.dart';
 
 class ErrorState extends StatelessWidget {
   final VoidCallback onBack;
@@ -12,13 +14,13 @@ class ErrorState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, color: Colors.white54, size: 40),
-          const SizedBox(height: 12),
-          const Text(
+          const Gap(12),
+          const CustomText(
             'Could not load movie details',
-            style: TextStyle(color: Colors.white70),
+            color: Colors.white70,
           ),
-          const SizedBox(height: 16),
-          TextButton(onPressed: onBack, child: const Text('Go back')),
+          const Gap(16),
+          TextButton(onPressed: onBack, child: const CustomText('Go back')),
         ],
       ),
     );

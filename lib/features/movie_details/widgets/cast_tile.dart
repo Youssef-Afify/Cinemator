@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:task/features/movie_details/data/helpers/cast_model.dart';
 
 class CastTile extends StatelessWidget {
@@ -22,7 +23,7 @@ class CastTile extends StatelessWidget {
                 ? const Icon(Icons.person, color: Colors.white38)
                 : null,
           ),
-          const SizedBox(height: 6),
+          const Gap(6),
           Text(
             cast.name,
             maxLines: 1,

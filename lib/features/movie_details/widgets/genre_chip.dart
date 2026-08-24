@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/shared/custom_text.dart';
 
 class GenreChip extends StatelessWidget {
   final String name;
@@ -14,13 +15,11 @@ class GenreChip extends StatelessWidget {
         color: color,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
+      child: CustomText(
         name,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
+        color: Colors.white,
+        size: 12,
+        weight: FontWeight.w700,
       ),
     );
   }

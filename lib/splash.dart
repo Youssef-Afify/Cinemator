@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/constants/app_info.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/features/auth/views/auth_view.dart';
 
@@ -35,23 +36,19 @@ class _SplashState extends State<Splash> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.movie, color: AppColors.primary, size: 100),
-            Text(
+            CustomText(
               AppInfo.name,
-              style: TextStyle(
-                color: AppColors.primary,
-                fontFamily: 'Manrope',
-                fontSize: 48,
-                fontWeight: FontWeight.w900,
-              ),
+              color: AppColors.primary,
+              size: 48,
+              weight: FontWeight.w900,
+              family: 'Manrope',
             ),
-            Text(
+            CustomText(
               'YOUR GATEWAY TO CINEMA',
-              style: TextStyle(
-                color: AppColors.neutral,
-                fontFamily: 'Inter',
-                fontSize: 18,
-                fontWeight: FontWeight.w100,
-              ),
+              color: AppColors.neutral,
+              size: 18,
+              weight: FontWeight.w100,
+              family: 'Inter',
             ),
             Gap(20),
             LoadingAnimationWidget.progressiveDots(

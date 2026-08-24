@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task/core/constants/app_colors.dart';
+import 'package:task/shared/custom_text.dart';
 
 class LegalTile extends StatelessWidget {
   final String label;
@@ -24,10 +25,7 @@ class LegalTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                ),
+                CustomText(label, color: Colors.white, size: 14),
                 Icon(Icons.chevron_right, color: AppColors.neutral, size: 18),
               ],
             ),

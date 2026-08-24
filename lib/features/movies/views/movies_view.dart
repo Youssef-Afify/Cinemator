@@ -12,6 +12,7 @@ import 'package:task/features/movies/widgets/category_section.dart';
 import 'package:task/features/movies/widgets/search_results.dart';
 import 'package:task/shared/app_drawer.dart';
 import 'package:task/shared/custom_app_bar.dart';
+import 'package:task/shared/material_page_route.dart';
 import 'package:task/shared/search_field.dart';
 
 class MoviesView extends StatefulWidget {
@@ -60,7 +61,7 @@ class _MoviesViewState extends State<MoviesView> {
 
   void _openMovie(int movieId) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => MovieDetailsView(movieId: movieId)),
+      route(MovieDetailsView(movieId: movieId)),
     );
   }
 

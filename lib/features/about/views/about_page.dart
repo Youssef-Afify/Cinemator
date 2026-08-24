@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/about/widgets/about_card.dart';
 import 'package:task/features/about/widgets/info_row.dart';
 import 'package:task/features/about/widgets/legal_tile.dart';
 import 'package:task/shared/custom_app_bar.dart';
+import 'package:task/shared/custom_text.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -12,7 +14,7 @@ class AboutPage extends StatelessWidget {
   void _comingSoon(BuildContext context) {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Coming soon')));
+    ).showSnackBar(const SnackBar(content: CustomText('Coming soon')));
   }
 
   @override
@@ -28,7 +30,7 @@ class AboutPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const SizedBox(height: 8),
+            const Gap(8),
             Container(
               width: 72,
               height: 72,
@@ -42,7 +44,7 @@ class AboutPage extends StatelessWidget {
                 size: 36,
               ),
             ),
-            const SizedBox(height: 16),
+            const Gap(16),
             const Text(
               AppInfo.name,
               style: TextStyle(
@@ -52,7 +54,7 @@ class AboutPage extends StatelessWidget {
                 letterSpacing: 1,
               ),
             ),
-            const SizedBox(height: 6),
+            const Gap(6),
             Text(
               'VERSION ${AppInfo.version} (BUILD ${AppInfo.buildNumber})',
               style: TextStyle(
@@ -62,7 +64,7 @@ class AboutPage extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 28),
+            const Gap(28),
             AboutCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,17 +77,15 @@ class AboutPage extends StatelessWidget {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      Text(
+                      CustomText(
                         'About The App',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
+                        color: AppColors.primary,
+                        size: 15,
+                        weight: FontWeight.w700,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const Gap(12),
                   Text(
                     '${AppInfo.name} helps you discover, browse, and keep '
                     'track of movies using real data from TMDB — search '
@@ -100,7 +100,7 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const Gap(16),
             AboutCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,24 +113,22 @@ class AboutPage extends StatelessWidget {
                         size: 18,
                       ),
                       SizedBox(width: 8),
-                      Text(
+                      CustomText(
                         'Development',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
+                        color: Colors.white,
+                        size: 15,
+                        weight: FontWeight.w700,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  const Gap(14),
                   const InfoRow(label: 'Framework', value: 'Flutter'),
-                  const SizedBox(height: 10),
+                  const Gap(10),
                   const InfoRow(label: 'Data Provider', value: 'TMDB API'),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const Gap(16),
             AboutCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,17 +137,15 @@ class AboutPage extends StatelessWidget {
                     children: [
                       Icon(Icons.gavel_rounded, color: Colors.white, size: 18),
                       SizedBox(width: 8),
-                      Text(
+                      CustomText(
                         'Legal',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
+                        color: Colors.white,
+                        weight: FontWeight.w700,
+                        size: 15,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const Gap(4),
                   LegalTile(
                     label: 'Terms of Service',
                     onTap: () => _comingSoon(context),
@@ -170,19 +166,17 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const Gap(16),
             AboutCard(
               child: Column(
                 children: [
-                  const Text(
+                  const CustomText(
                     'Need Assistance?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                    ),
+                    color: Colors.white,
+                    size: 16,
+                    weight: FontWeight.w800,
                   ),
-                  const SizedBox(height: 8),
+                  const Gap(8),
                   Text(
                     "Have a question or ran into an issue? Reach out and "
                     "we'll get back to you.",
@@ -193,7 +187,7 @@ class AboutPage extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const Gap(16),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -218,7 +212,7 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const Gap(20),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
@@ -6,6 +7,7 @@ import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movie_details/views/movie_details_view.dart';
 import 'package:task/features/movies/widgets/custom_movie_card.dart';
 import 'package:task/shared/custom_app_bar.dart';
+import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/material_page_route.dart';
 
 class MoviesByGenrePage extends StatefulWidget {
@@ -72,17 +74,17 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  CustomText(
                     'Error: ${provider.genreErrorMessage}',
-                    style: TextStyle(color: Colors.white),
+                    color: Colors.white,
                   ),
-                  const SizedBox(height: 16),
+                  const Gap(16),
                   ElevatedButton(
                     onPressed: () => provider.fetchMoviesByGenre(
                       widget.genreId,
                       refresh: true,
                     ),
-                    child: const Text('Retry'),
+                    child: const CustomText('Retry'),
                   ),
                 ],
               ),
@@ -91,9 +93,9 @@ class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
 
           if (provider.genreMovies.isEmpty) {
             return const Center(
-              child: Text(
+              child: CustomText(
                 'No movies found in this genre',
-                style: TextStyle(color: Colors.white),
+                color: Colors.white,
               ),
             );
           }
