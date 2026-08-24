@@ -10,21 +10,21 @@ import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/error_retry.dart';
 import 'package:task/shared/material_page_route.dart';
 
-class MoviesByGenrePage extends StatefulWidget {
+class MoviesByGenreView extends StatefulWidget {
   final int genreId;
   final String genreName;
 
-  const MoviesByGenrePage({
+  const MoviesByGenreView({
     super.key,
     required this.genreId,
     required this.genreName,
   });
 
   @override
-  State<MoviesByGenrePage> createState() => _MoviesByGenrePageState();
+  State<MoviesByGenreView> createState() => _MoviesByGenreViewState();
 }
 
-class _MoviesByGenrePageState extends State<MoviesByGenrePage> {
+class _MoviesByGenreViewState extends State<MoviesByGenreView> {
   final ScrollController _scrollController = ScrollController();
 
   @override

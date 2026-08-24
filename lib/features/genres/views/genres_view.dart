@@ -3,7 +3,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/features/genres/provider/genre_provider.dart';
-import 'package:task/features/genres/views/movies_by_genre_page.dart';
+import 'package:task/features/genres/views/movies_by_genre_view.dart';
 import 'package:task/features/genres/widgets/genre_tile.dart';
 import 'package:task/shared/custom_app_bar.dart';
 import 'package:task/shared/custom_text.dart';
@@ -90,7 +90,7 @@ class _GenresViewState extends State<GenresView>
                       Navigator.push(
                         context,
                         route(
-                          MoviesByGenrePage(
+                          MoviesByGenreView(
                             genreId: genre.id,
                             genreName: genre.name,
                           ),

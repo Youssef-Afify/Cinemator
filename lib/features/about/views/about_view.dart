@@ -8,8 +8,8 @@ import 'package:task/features/about/widgets/legal_tile.dart';
 import 'package:task/shared/custom_app_bar.dart';
 import 'package:task/shared/custom_text.dart';
 
-class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
+class AboutView extends StatelessWidget {
+  const AboutView({super.key});
 
   void _comingSoon(BuildContext context) {
     ScaffoldMessenger.of(
