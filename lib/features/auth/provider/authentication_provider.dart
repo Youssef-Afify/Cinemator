@@ -5,10 +5,10 @@ enum AuthEnum {
   login,
 }
 
-class AuthProvider extends ChangeNotifier {
+class AuthenticationProvider extends ChangeNotifier {
   AuthEnum authIndex;
 
-  AuthProvider([this.authIndex = AuthEnum.signup]);
+  AuthenticationProvider([this.authIndex = AuthEnum.login]);
 
   void changeIndex(AuthEnum index) {
     authIndex = index;

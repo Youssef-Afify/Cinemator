@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/constants/app_info.dart';
-import 'package:task/core/utils/pref_helper.dart';
-import 'package:task/features/auth/provider/auth_provider.dart';
+import 'package:task/features/auth/provider/authentication_provider.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
+import 'package:task/features/auth/views/forgot_password_view.dart';
+import 'package:task/features/auth/widgets/auth_row.dart';
+import 'package:task/features/auth/widgets/google_widget.dart';
 import 'package:task/root.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
@@ -25,6 +29,154 @@ class _LoginViewState extends State<LoginView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoginLoading = false;
+  bool _isGoogleLoading = false;
+  bool _isLoading = false;
+
+  void startLoginLoading() {
+    setState(() {
+      _isLoginLoading = true;
+      _isGoogleLoading = false;
+      _isLoading = true;
+    });
+  }
+
+  void startGoogleLoading() {
+    setState(() {
+      _isGoogleLoading = true;
+      _isLoginLoading = false;
+      _isLoading = true;
+    });
+  }
+
+  void stopLoading() {
+    setState(() {
+      _isGoogleLoading = false;
+      _isLoginLoading = false;
+      _isLoading = false;
+    });
+  }
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final GoogleSignIn google = GoogleSignIn.instance;
+
+  Future<void> initializeGoogleSignIn() async {
+    await google.initialize();
+  }
+
+  Future signInWithGoogle() async {
+    try {
+      startGoogleLoading();
+      final GoogleSignInAccount googleUser = await google.authenticate();
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final OAuthCredential oAuthCredential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential credential = await auth.signInWithCredential(
+        oAuthCredential,
+      );
+      final User? user = credential.user;
+      if (user == null) {
+        stopLoading();
+        showMessage("Google sign in failed");
+        return;
+      }
+      String? username = user.displayName;
+      String? email = user.email;
+
+      if (!mounted) return;
+      context.read<UserProvider>().changeInfo(
+        newUsername: username,
+        newEmail: email,
+      );
+      stopLoading();
+      Navigator.pushReplacement(context, route(const Root()));
+    } on FirebaseAuthException catch (e) {
+      stopLoading();
+      showMessage("error: ${e.message ?? e.code}");
+    } catch (e) {
+      stopLoading();
+      showMessage("Google sign in failed, please try again");
+    }
+  }
+
+  Future<void> login() async {
+    startLoginLoading();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    try {
+      final UserCredential credential = await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final User? user = credential.user;
+      if (user == null) {
+        stopLoading();
+        showMessage("Login failed, please try again");
+        return;
+      }
+      if (!user.emailVerified) {
+        await auth.signOut();
+        stopLoading();
+        showMessage("Please verify you email before logging in");
+        return;
+      }
+      String? username = user.displayName;
+      if (!mounted) return;
+      context.read<UserProvider>().changeInfo(
+        newUsername: username,
+        newEmail: email,
+      );
+      stopLoading();
+      Navigator.pushReplacement(context, route(const Root()));
+    } on FirebaseAuthException catch (e) {
+      stopLoading();
+      String message;
+      switch (e.code) {
+        case 'invalid-email':
+          message = "email address is not valid";
+          break;
+        case 'user-not-found':
+          message = "Account doesn't exist with this email";
+          break;
+        case 'wrong-password':
+          message = "Incorrect passowrd";
+          break;
+        case 'invalid-credential':
+          message = "Invalid Email or Password";
+          break;
+        case 'user-disabled':
+          message = "this account has been disabled";
+          break;
+        case 'too-many-requests':
+          message = "Too many login attempts, try again after 1 min";
+          break;
+        case 'operation-not-allowed':
+          message = "Email/Password Authentication is not enabled";
+          break;
+        default:
+          message = e.message ?? "Login Failed";
+      }
+      showMessage(message);
+    } catch (e) {
+      stopLoading();
+      showMessage("something went wrong");
+    }
+  }
+
+  void showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeGoogleSignIn();
+  }
 
   @override
   void dispose() {
@@ -97,7 +249,10 @@ class _LoginViewState extends State<LoginView> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () => Navigator.push(
+                            context,
+                            route(const ForgotPasswordView()),
+                          ),
                           child: CustomText(
                             'Forgot Password?',
                             color: AppColors.secondary,
@@ -107,51 +262,35 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                       Gap(15),
-                      CustomButton(
-                        text: 'Login',
-                        onTap: () async {
-                          if (_formKey.currentState!.validate()) {
-                            final email = _emailController.text.trim();
-                            final userProvider = context.read<UserProvider>();
-                            userProvider.changeInfo(newEmail: email);
-                            await PrefHelper.saveSession(
-                              userProvider.username,
-                              email,
-                            );
-                            if (!context.mounted) return;
-                            Navigator.of(
-                              context,
-                            ).pushReplacement(route(Root()));
-                          }
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CustomButton(
+                            text: 'Login',
+                            isLoading: _isLoading,
+                            specificLoading: _isLoginLoading,
+                            onTap: () async {
+                              if (_formKey.currentState!.validate()) {
+                                await login();
+                              }
+                            },
+                          ),
+                          GoogleWidget(
+                            onTap: () async => await signInWithGoogle(),
+                            isLoading: _isLoading,
+                            specificLoading: _isGoogleLoading,
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
               Gap(20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    "Don't have an account?",
-                    color: AppColors.neutral,
-                    size: 16,
-                    family: 'Inter',
-                  ),
-                  Gap(10),
-                  GestureDetector(
-                    onTap: () => context.read<AuthProvider>().changeIndex(
-                      AuthEnum.signup,
-                    ),
-                    child: CustomText(
-                      'Sign Up',
-                      color: AppColors.secondary,
-                      size: 16,
-                      family: 'Inter',
-                    ),
-                  ),
-                ],
+              AuthRow(
+                question: "Don't have an account?",
+                answer: 'Sign Up',
+                authEnum: AuthEnum.signup,
               ),
             ],
           ),

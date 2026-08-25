@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,36 @@ class _UserViewState extends State<UserView> {
   late final TextEditingController _usernameController;
   late final TextEditingController _emailController;
 
+  bool _isProfileLoading = false;
+  bool _isLogoutLoading = false;
+  bool _isLoading = false;
+
+  void startProfileLoading() {
+    setState(() {
+      _isProfileLoading = true;
+      _isLogoutLoading = false;
+      _isLoading = true;
+    });
+  }
+
+  void startLogoutLoading() {
+    setState(() {
+      _isLogoutLoading = true;
+      _isProfileLoading = false;
+      _isLoading = true;
+    });
+  }
+
+  void stopLoading() {
+    setState(() {
+      _isProfileLoading = false;
+      _isLogoutLoading = false;
+      _isLoading = false;
+    });
+  }
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     super.initState();
@@ -36,58 +67,103 @@ class _UserViewState extends State<UserView> {
   }
 
   void _saveInfo() async {
-    final userProvider = context.read<UserProvider>();
-    userProvider.changeInfo(newUsername: _usernameController.text);
-    await PrefHelper.saveSession(_usernameController.text, userProvider.email);
-    if (!mounted) return;
-    FocusScope.of(context).unfocus();
+    startProfileLoading();
+    final name = _usernameController.text.trim();
+    try {
+      await auth.currentUser?.updateDisplayName(name);
+      if (!mounted) return;
+      FocusScope.of(context).unfocus();
+      final userProvider = context.read<UserProvider>();
+      userProvider.changeInfo(newUsername: name);
+      await PrefHelper.saveSession(
+        _usernameController.text,
+        userProvider.email,
+      );
+      stopLoading();
+    } catch (e) {
+      stopLoading();
+      showMessage("something went wrong");
+    }
   }
 
-  void _logout() => performLogout(context);
+  void showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _logout() async {
+    try {
+      startLogoutLoading();
+      await performLogout(context);
+      stopLoading();
+    } catch (e) {
+      stopLoading();
+      showMessage("something went wrong");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const Gap(48),
-              CircleAvatar(
-                radius: 55,
-                backgroundColor: AppColors.primary,
-                child: const Icon(Icons.person, size: 60, color: Colors.white),
-              ),
-              Gap(20),
-              CustomText(
-                context.watch<UserProvider>().username,
-                color: Colors.white,
-                size: 32,
-              ),
-              Gap(36),
-              CustomTextField(
-                label: 'Username',
-                controller: _usernameController,
-                prefixIcon: Icons.person_outline,
-              ),
-              const Gap(16),
-              CustomTextField(
-                label: 'Email',
-                controller: _emailController,
-                prefixIcon: Icons.email_outlined,
-                enabled: false,
-              ),
-              const Gap(40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CustomButton(text: 'Edit Info', onTap: _saveInfo),
-                  CustomButton(text: 'Logout', onTap: _logout),
-                ],
-              ),
-            ],
+    return GestureDetector(
+      onTap: FocusScope.of(context).unfocus,
+      child: Scaffold(
+        backgroundColor: AppColors.bg,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                const Gap(48),
+                CircleAvatar(
+                  radius: 55,
+                  backgroundColor: AppColors.primary,
+                  child: const Icon(
+                    Icons.person,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                Gap(20),
+                CustomText(
+                  context.watch<UserProvider>().username,
+                  color: Colors.white,
+                  size: 32,
+                ),
+                Gap(36),
+                CustomTextField(
+                  label: 'Username',
+                  controller: _usernameController,
+                  prefixIcon: Icons.person_outline,
+                ),
+                const Gap(16),
+                CustomTextField(
+                  label: 'Email',
+                  controller: _emailController,
+                  prefixIcon: Icons.email_outlined,
+                  enabled: false,
+                ),
+                const Gap(40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CustomButton(
+                      text: 'Edit Info',
+                      onTap: () async => _saveInfo(),
+                      isLoading: _isLoading,
+                      specificLoading: _isProfileLoading,
+                    ),
+                    CustomButton(
+                      text: 'Logout',
+                      onTap: () async => _logout(),
+                      isLoading: _isLoading,
+                      specificLoading: _isLogoutLoading,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

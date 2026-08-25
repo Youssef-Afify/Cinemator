@@ -1,18 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_info.dart';
-import 'package:task/features/auth/provider/auth_provider.dart';
-import 'package:task/features/auth/provider/user_provider.dart';
+import 'package:task/features/auth/provider/authentication_provider.dart';
+import 'package:task/features/auth/widgets/auth_row.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
-import 'package:task/shared/material_page_route.dart';
 import 'package:task/core/utils/validators/confirm_validator.dart';
 import 'package:task/core/utils/validators/email_validator.dart';
 import 'package:task/core/utils/validators/name_validator.dart';
 import 'package:task/core/utils/validators/password_validator.dart';
-import 'package:task/core/utils/pref_helper.dart';
-import 'package:task/features/auth/widgets/login_view.dart';
 import 'package:task/shared/custom_button.dart';
 import 'package:task/core/constants/app_colors.dart';
 
@@ -30,6 +28,10 @@ class _SignupViewState extends State<SignupView> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
+  bool _isLoading = false;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -37,6 +39,61 @@ class _SignupViewState extends State<SignupView> {
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
+  }
+
+  Future<void> signup() async {
+    setState(() => _isLoading = true);
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    try {
+      final UserCredential credential = await auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final User? user = credential.user;
+      if (user != null) {
+        await user.updateDisplayName(name);
+      }
+
+      if (user != null && !user.emailVerified) {
+        setState(() => _isLoading = false);
+        showMessage("Registration Successful! Please verify your email");
+        await user.sendEmailVerification();
+        await Future.delayed(Duration(seconds: 1));
+        if (!mounted) return;
+        context.read<AuthenticationProvider>().changeIndex(AuthEnum.login);
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() => _isLoading = false);
+      String message;
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = "Account already exists";
+          break;
+        case 'invalid-email':
+          message = "the email address is invalid";
+          break;
+        case 'weak-password':
+          message = "the password is too weak";
+          break;
+        case 'operation-not-allowed':
+          message = "Email/Password Authentication is not enabled";
+          break;
+        default:
+          message = e.message ?? "Something went wrong";
+      }
+      showMessage(message);
+    } catch (e) {
+      setState(() => _isLoading = false);
+      showMessage('Something went worng, please try again later');
+    }
+  }
+
+  void showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -118,19 +175,10 @@ class _SignupViewState extends State<SignupView> {
                       Gap(30),
                       CustomButton(
                         text: 'Sign Up',
+                        isLoading: _isLoading,
                         onTap: () async {
                           if (_formKey.currentState!.validate()) {
-                            final name = _nameController.text.trim();
-                            final email = _emailController.text.trim();
-                            context.read<UserProvider>().changeInfo(
-                              newUsername: name,
-                              newEmail: email,
-                            );
-                            await PrefHelper.saveSession(name, email);
-                            if (!context.mounted) return;
-                            Navigator.of(
-                              context,
-                            ).pushReplacement(route(LoginView()));
+                            await signup();
                           }
                         },
                       ),
@@ -139,28 +187,10 @@ class _SignupViewState extends State<SignupView> {
                 ),
               ),
               Gap(20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    'Already have an account?',
-                    color: AppColors.neutral,
-                    size: 16,
-                    family: 'Inter',
-                  ),
-                  Gap(10),
-                  GestureDetector(
-                    onTap: () => context.read<AuthProvider>().changeIndex(
-                      AuthEnum.login,
-                    ),
-                    child: CustomText(
-                      'Login',
-                      color: AppColors.secondary,
-                      size: 16,
-                      family: 'Inter',
-                    ),
-                  ),
-                ],
+              AuthRow(
+                question: 'Already have an account?',
+                answer: 'Login',
+                authEnum: AuthEnum.login,
               ),
             ],
           ),

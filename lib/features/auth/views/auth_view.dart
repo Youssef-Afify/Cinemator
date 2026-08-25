@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task/features/auth/provider/auth_provider.dart';
+import 'package:task/features/auth/provider/authentication_provider.dart';
 import 'package:task/features/auth/widgets/login_view.dart';
 import 'package:task/features/auth/widgets/signup_view.dart';
 
@@ -18,7 +18,7 @@ class _AuthViewState extends State<AuthView> {
   };
   @override
   Widget build(BuildContext context) {
-    AuthEnum key = context.watch<AuthProvider>().authIndex;
+    AuthEnum key = context.watch<AuthenticationProvider>().authIndex;
     return authMap[key]!;
   }
 }

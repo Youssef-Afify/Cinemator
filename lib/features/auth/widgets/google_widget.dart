@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/shared/custom_text.dart';
 
-class CustomButton extends StatelessWidget {
-  final String text;
+class GoogleWidget extends StatelessWidget {
   final void Function()? onTap;
-  final double? width;
-  final double? height;
-  final double? radius;
-
   final bool isLoading;
   final bool? specificLoading;
 
-  const CustomButton({
+  const GoogleWidget({
     super.key,
-    required this.text,
     this.onTap,
-    this.width,
-    this.height,
-    this.radius,
     this.isLoading = false,
     this.specificLoading,
   });
@@ -29,11 +22,13 @@ class CustomButton extends StatelessWidget {
     return GestureDetector(
       onTap: isLoading ? null : onTap,
       child: Container(
-        width: width ?? 150,
-        height: height ?? 50,
+        width: 150,
+        height: 50,
         decoration: BoxDecoration(
-          color: isLoading ? AppColors.disabled : AppColors.primary,
-          borderRadius: BorderRadius.circular(radius ?? 15),
+          color: isLoading
+              ? const Color.fromARGB(164, 255, 255, 255)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(15),
         ),
         child: Center(
           child: specificLoading ?? isLoading
@@ -41,7 +36,18 @@ class CustomButton extends StatelessWidget {
                   color: Colors.white,
                   size: 24,
                 )
-              : CustomText(text, color: Colors.white, size: 18),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/google.svg',
+                      width: 30,
+                      height: 30,
+                    ),
+                    Gap(10),
+                    CustomText('Google', color: AppColors.primary, size: 18),
+                  ],
+                ),
         ),
       ),
     );

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/env.dart';
-import 'package:task/features/auth/provider/auth_provider.dart';
+import 'package:task/features/auth/provider/authentication_provider.dart';
 import 'package:task/features/movies/data/movie_repository.dart';
 import 'package:task/features/movies/provider/favorites_provider.dart';
 import 'package:task/features/movies/provider/tmdb_provider.dart';
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
               GenreProvider(repository: GenreRepository(apiKey: Env.apiKey)),
         ),
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
-        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
         ),
         home: const Splash(),
         routes: {
-          '/genres': (_) => GenresView(),
-          '/movies': (_) => MoviesView(),
+          '/genres': (_) => const GenresView(),
+          '/movies': (_) => const MoviesView(),
         },
       ),
     );
