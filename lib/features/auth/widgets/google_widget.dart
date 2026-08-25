@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:task/core/constants/app_colors.dart';
 import 'package:task/shared/custom_text.dart';
 
 class GoogleWidget extends StatelessWidget {
@@ -45,7 +44,7 @@ class GoogleWidget extends StatelessWidget {
                       height: 30,
                     ),
                     Gap(10),
-                    CustomText('Google', color: AppColors.primary, size: 18),
+                    CustomText('Google', color: Colors.black, size: 18),
                   ],
                 ),
         ),
