@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:120725006774:android:2b63f060e8dfc747533917",
+        "android_client_info": {
+          "package_name": "com.example.cinemator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120725006774-9ttghkld7lvrmhr6kk6j5j07pu5j4hr0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHJfb6_oUxDJr0zzrRWtWGVoeoventlVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120725006774-9ttghkld7lvrmhr6kk6j5j07pu5j4hr0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120725006774-d47660jcths7pu64mfvf3182251kvoi3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.task"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:120725006774:android:322d21da485cff3c533917",
         "android_client_info": {
           "package_name": "com.example.task"
