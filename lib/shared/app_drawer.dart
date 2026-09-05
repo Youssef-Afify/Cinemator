@@ -15,7 +15,9 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final username = context.watch<UserProvider>().username;
+    final String username = context.watch<UserProvider>().username;
+    final bool isAdmin = context.watch<UserProvider>().isAdmin;
+    final String profileIcon = context.watch<UserProvider>().profileIcon();
 
     return Drawer(
       backgroundColor: AppColors.bg,
@@ -30,11 +32,7 @@ class AppDrawer extends StatelessWidget {
                   CircleAvatar(
                     radius: 26,
                     backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                    child: Icon(
-                      Icons.person,
-                      color: AppColors.primary,
-                      size: 28,
-                    ),
+                    child: CustomText(profileIcon, color: AppColors.primary),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -51,7 +49,7 @@ class AppDrawer extends StatelessWidget {
                         ),
                         const Gap(2),
                         CustomText(
-                          'Member',
+                          isAdmin ? 'Admin' : 'Member',
                           color: AppColors.neutral,
                           size: 12,
                         ),

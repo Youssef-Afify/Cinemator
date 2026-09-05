@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/utils/pref_helper.dart';
+import 'package:task/core/utils/validators/name_validator.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
@@ -18,6 +19,7 @@ class UserView extends StatefulWidget {
 }
 
 class _UserViewState extends State<UserView> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _usernameController;
   late final TextEditingController _emailController;
 
@@ -68,17 +70,18 @@ class _UserViewState extends State<UserView> {
 
   void _saveInfo() async {
     startProfileLoading();
-    final name = _usernameController.text.trim();
+    String name = _usernameController.text.trim();
+    if (name.isEmpty) {
+      name = 'N/A';
+    }
     try {
       await auth.currentUser?.updateDisplayName(name);
       if (!mounted) return;
       FocusScope.of(context).unfocus();
       final userProvider = context.read<UserProvider>();
       userProvider.changeInfo(newUsername: name);
-      await PrefHelper.saveSession(
-        _usernameController.text,
-        userProvider.email,
-      );
+      await PrefHelper.saveSession(name, userProvider.email);
+      _usernameController.text = name;
       stopLoading();
     } catch (e) {
       stopLoading();
@@ -106,6 +109,9 @@ class _UserViewState extends State<UserView> {
 
   @override
   Widget build(BuildContext context) {
+    final String username = context.watch<UserProvider>().username;
+    final String profileIcon = context.watch<UserProvider>().profileIcon();
+
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
@@ -118,24 +124,28 @@ class _UserViewState extends State<UserView> {
                 const Gap(48),
                 CircleAvatar(
                   radius: 55,
-                  backgroundColor: AppColors.primary,
-                  child: const Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.white,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                  child: CustomText(
+                    profileIcon,
+                    color: AppColors.primary,
+                    size: 32,
                   ),
                 ),
-                Gap(20),
+                const Gap(20),
                 CustomText(
-                  context.watch<UserProvider>().username,
+                  username,
                   color: Colors.white,
                   size: 32,
                 ),
-                Gap(36),
-                CustomTextField(
-                  label: 'Username',
-                  controller: _usernameController,
-                  prefixIcon: Icons.person_outline,
+                const Gap(36),
+                Form(
+                  key: _formKey,
+                  child: CustomTextField(
+                    label: 'Username',
+                    prefixIcon: Icons.person_outline,
+                    validator: (name) => nameValidator(name),
+                    controller: _usernameController,
+                  ),
                 ),
                 const Gap(16),
                 CustomTextField(
@@ -150,13 +160,17 @@ class _UserViewState extends State<UserView> {
                   children: [
                     CustomButton(
                       text: 'Edit Info',
-                      onTap: () async => _saveInfo(),
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          _saveInfo();
+                        }
+                      },
                       isLoading: _isLoading,
                       specificLoading: _isProfileLoading,
                     ),
                     CustomButton(
                       text: 'Logout',
-                      onTap: () async => _logout(),
+                      onTap: _logout,
                       isLoading: _isLoading,
                       specificLoading: _isLogoutLoading,
                     ),

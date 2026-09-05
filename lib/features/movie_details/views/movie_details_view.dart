@@ -94,8 +94,20 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                           return SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: () =>
-                                  favoritesProvider.toggleFavorite(movie),
+                              onPressed: () async {
+                                final success = await favoritesProvider
+                                    .toggleFavorite(movie);
+                                if (!success && context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        favoritesProvider.errorMessage ??
+                                            'Something went wrong. Please try again.',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                               icon: Icon(
                                 isFavorite
                                     ? Icons.favorite

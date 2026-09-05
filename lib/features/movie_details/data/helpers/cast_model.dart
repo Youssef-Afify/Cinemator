@@ -21,7 +21,17 @@ class CastModel {
   }
 
   String get profileUrl {
-    if (profilePath == null) return '';
+    if (profilePath == null || profilePath!.isEmpty) return '';
+    if (profilePath!.startsWith('http')) return profilePath!;
     return 'https://image.tmdb.org/t/p/w185$profilePath';
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'character': character,
+      'profile_path': profilePath,
+    };
   }
 }

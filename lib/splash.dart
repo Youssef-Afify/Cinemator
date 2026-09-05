@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/auth/provider/user_provider.dart';
+import 'package:task/features/movies/provider/favorites_provider.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/material_page_route.dart';
 import 'package:task/features/auth/views/auth_view.dart';
@@ -39,7 +40,15 @@ class _SplashState extends State<Splash> {
         newUsername: user.displayName,
         newEmail: user.email,
       );
-      Navigator.of(context).pushReplacement(route(const Root()));
+      // Load admin status from Firestore
+      await context.read<UserProvider>().loadAdminStatus(user.uid);
+      // Load persisted favorites from Firestore
+      if (mounted) {
+        await context.read<FavoritesProvider>().loadFavorites(user.uid);
+      }
+      if (mounted) {
+        Navigator.of(context).pushReplacement(route(const Root()));
+      }
     } else {
       Navigator.of(context).pushReplacement(route(const AuthView()));
     }

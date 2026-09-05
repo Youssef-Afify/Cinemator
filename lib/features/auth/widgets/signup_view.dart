@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_info.dart';
 import 'package:task/features/auth/provider/authentication_provider.dart';
+import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/features/auth/widgets/auth_row.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
@@ -53,6 +54,13 @@ class _SignupViewState extends State<SignupView> {
       final User? user = credential.user;
       if (user != null) {
         await user.updateDisplayName(name);
+        if (mounted) {
+          await context.read<UserProvider>().ensureUserDocument(
+            uid: user.uid,
+            name: name,
+            email: email,
+          );
+        }
       }
 
       if (user != null && !user.emailVerified) {
@@ -101,6 +109,7 @@ class _SignupViewState extends State<SignupView> {
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
+        appBar: AppBar(toolbarHeight: 0, backgroundColor: AppColors.bg),
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(

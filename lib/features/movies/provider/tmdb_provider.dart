@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:task/core/constants/enums.dart';
 import 'package:task/core/utils/error_message.dart';
+import 'package:task/core/utils/pref_helper.dart';
 import '../../movie_details/data/movie_details_model.dart';
 import '../data/movie_model.dart';
 import '../data/movie_repository.dart';
+import '../data/tmdb_model.dart';
 
 class TmdbProvider extends ChangeNotifier {
   final MovieRepository repository;
@@ -63,6 +67,14 @@ class TmdbProvider extends ChangeNotifier {
   bool isSearching = false;
   String? searchErrorMessage;
   String currentQuery = '';
+
+  // ========== Suggestions slider state ==========
+  // Deliberately isolated from category state — pull-to-refresh
+  // (refreshAllCategories) must never touch these; only an explicit tap
+  // on the Suggestions slider's own refresh icon should.
+  List<MovieModel> suggestions = [];
+  bool isLoadingSuggestions = false;
+  String? suggestionsErrorMessage;
 
   TmdbProvider({required this.repository});
 
@@ -146,6 +158,7 @@ class TmdbProvider extends ChangeNotifier {
         fetchMoviesPage(category: category, page: 1),
     ]);
   }
+
   // Kept separate from fetchMoviesPage (which replaces page 1 for the
   // horizontal row) so the two don't stomp on each other's pagination —
   // this one continues from whatever page fetchMoviesPage already loaded,
@@ -268,6 +281,63 @@ class TmdbProvider extends ChangeNotifier {
       isGenreLoading = false;
       notifyListeners();
     }
+  }
+
+  // Loads the 5 suggested movies from a page of "top rated" results.
+  //
+  // If forceNewPage is false (the normal case — e.g. first load of the
+  // Movies tab) and a page was already picked in a previous session,
+  // reuses that exact page, so the suggestions stay stable across app
+  // restarts until the user explicitly asks for new ones via the
+  // Suggestions slider's own refresh icon.
+  //
+  // If forceNewPage is true, or there's no cached page yet, a genuinely
+  // random page is picked — bounded by the *real* page count TMDB reports
+  // for "top rated" (learned from a live response, not a hardcoded
+  // assumption), so the random pick can never land outside the valid
+  // range.
+  Future<void> loadSuggestions({bool forceNewPage = false}) async {
+    isLoadingSuggestions = true;
+    suggestionsErrorMessage = null;
+    notifyListeners();
+
+    try {
+      int? page = forceNewPage ? null : await PrefHelper.getSuggestPage();
+      TmdbModel response;
+
+      if (page == null) {
+        // Page 1 doubles as a "probe" to learn the real total page count.
+        // If the random pick happens to land on page 1 too, its response
+        // is reused directly instead of fetching it a second time.
+        final probe = await repository.getByCategory(
+          category: CategoryGet.topRated,
+          page: 1,
+        );
+        final totalPages = probe.totalPages < 1 ? 1 : probe.totalPages;
+        final randomPage = Random().nextInt(totalPages) + 1;
+
+        response = randomPage == 1
+            ? probe
+            : await repository.getByCategory(
+                category: CategoryGet.topRated,
+                page: randomPage,
+              );
+        page = randomPage;
+        await PrefHelper.setSuggestPage(page);
+      } else {
+        response = await repository.getByCategory(
+          category: CategoryGet.topRated,
+          page: page,
+        );
+      }
+      suggestions = response.results.take(6).toList();
+      suggestionsErrorMessage = null;
+    } catch (e) {
+      suggestionsErrorMessage = friendlyErrorMessage(e);
+    }
+
+    isLoadingSuggestions = false;
+    notifyListeners();
   }
 
   void clearError() {

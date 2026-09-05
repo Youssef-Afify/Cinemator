@@ -110,13 +110,19 @@ class MovieModel {
   }
 
   // Helper methods
+  // Handles two cases: TMDB's own relative paths (e.g. "/abc123.jpg",
+  // which need the CDN base URL prefixed) and full external URLs (which
+  // admin-created movies use, since they have no TMDB CDN path at all) —
+  // those are used exactly as given.
   String get posterUrl {
-    if (posterPath == null) return '';
+    if (posterPath == null || posterPath!.isEmpty) return '';
+    if (posterPath!.startsWith('http')) return posterPath!;
     return 'https://image.tmdb.org/t/p/w500$posterPath';
   }
 
   String get backdropUrl {
-    if (backdropPath == null) return '';
+    if (backdropPath == null || backdropPath!.isEmpty) return '';
+    if (backdropPath!.startsWith('http')) return backdropPath!;
     return 'https://image.tmdb.org/t/p/w780$backdropPath';
   }
 

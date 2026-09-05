@@ -10,6 +10,7 @@ import 'package:task/features/movies/provider/tmdb_provider.dart';
 import 'package:task/features/movie_details/views/movie_details_view.dart';
 import 'package:task/features/movies/widgets/category_section.dart';
 import 'package:task/features/movies/widgets/search_results.dart';
+import 'package:task/features/movies/widgets/suggestions_slider.dart';
 import 'package:task/features/movies/views/category_movies_view.dart';
 import 'package:task/shared/app_drawer.dart';
 import 'package:task/shared/custom_app_bar.dart';
@@ -75,15 +76,13 @@ class _MoviesViewState extends State<MoviesView>
   }
 
   void _openMovie(int movieId) {
-    Navigator.of(context).push(
-      route(MovieDetailsView(movieId: movieId)),
-    );
+    Navigator.of(context).push(route(MovieDetailsView(movieId: movieId)));
   }
 
   void _viewAll(String title, CategoryGet category) {
-    Navigator.of(context).push(
-      route(CategoryMoviesView(title: title, category: category)),
-    );
+    Navigator.of(
+      context,
+    ).push(route(CategoryMoviesView(title: title, category: category)));
   }
 
   // Pull-to-refresh: if a search is active, re-run it (so pulling down
@@ -126,6 +125,10 @@ class _MoviesViewState extends State<MoviesView>
                       if (isSearchActive)
                         SearchResults(provider: provider)
                       else ...[
+                        const SuggestionsSlider(),
+                        const Gap(10),
+                        const Divider(),
+                        const Gap(10),
                         CategorySection(
                           title: 'Popular',
                           category: CategoryGet.popular,

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/constants/app_colors.dart';
 import 'package:task/env.dart';
+import 'package:task/features/admin/data/admin_movie_repository.dart';
+import 'package:task/features/admin/provider/admin_provider.dart';
 import 'package:task/features/auth/provider/authentication_provider.dart';
 import 'package:task/features/movies/data/movie_repository.dart';
 import 'package:task/features/movies/provider/favorites_provider.dart';
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
         ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
+        ChangeNotifierProvider(create: (context) => AdminProvider(repository: AdminMovieRepository()),)
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

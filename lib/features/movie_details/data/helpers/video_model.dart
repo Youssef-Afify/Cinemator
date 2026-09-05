@@ -30,4 +30,8 @@ class VideoModel {
   String get thumbnailUrl => 'https://img.youtube.com/vi/$key/hqdefault.jpg';
 
   String get youtubeUrl => 'https://www.youtube.com/watch?v=$key';
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'key': key, 'name': name, 'site': site, 'type': type};
+  }
 }

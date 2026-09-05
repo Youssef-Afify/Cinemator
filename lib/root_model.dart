@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/features/admin/views/admin_movies_view.dart';
 import 'package:task/features/auth/views/user_view.dart';
 import 'package:task/features/movies/views/favorites_view.dart';
 import 'package:task/features/movies/views/movies_view.dart';
@@ -39,16 +40,22 @@ const List<RootModel> rootModels = [
     label: 'Movies',
   ),
   RootModel(
-    view: GenresView(),
-    selected: Icons.theater_comedy_rounded,
-    unselected: Icons.theater_comedy_outlined,
-    label: 'Genres',
+    view: AdminMoviesView(),
+    selected: Icons.star,
+    unselected: Icons.star_border,
+    label: 'Special',
   ),
   RootModel(
     view: FavoritesView(),
     selected: Icons.favorite,
     unselected: Icons.favorite_outline,
     label: 'Favorites',
+  ),
+  RootModel(
+    view: GenresView(),
+    selected: Icons.theater_comedy_rounded,
+    unselected: Icons.theater_comedy_outlined,
+    label: 'Genres',
   ),
   RootModel(
     view: UserView(),

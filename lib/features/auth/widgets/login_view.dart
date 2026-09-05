@@ -10,6 +10,7 @@ import 'package:task/features/auth/provider/user_provider.dart';
 import 'package:task/features/auth/views/forgot_password_view.dart';
 import 'package:task/features/auth/widgets/auth_row.dart';
 import 'package:task/features/auth/widgets/google_widget.dart';
+import 'package:task/features/movies/provider/favorites_provider.dart';
 import 'package:task/root.dart';
 import 'package:task/shared/custom_text.dart';
 import 'package:task/shared/custom_text_field.dart';
@@ -90,14 +91,26 @@ class _LoginViewState extends State<LoginView> {
         newUsername: username,
         newEmail: email,
       );
+      await context.read<UserProvider>().ensureUserDocument(
+        uid: user.uid,
+        name: username ?? 'N/A',
+        email: email ?? 'N/A',
+      );
+      if (mounted) {
+        await context.read<UserProvider>().loadAdminStatus(user.uid);
+      }
+      if (mounted) {
+        await context.read<FavoritesProvider>().loadFavorites(user.uid);
+      }
       stopLoading();
+      if (!mounted) return;
       Navigator.pushReplacement(context, route(const Root()));
     } on FirebaseAuthException catch (e) {
       stopLoading();
       showMessage("error: ${e.message ?? e.code}");
     } catch (e) {
       stopLoading();
-      showMessage("Google sign in failed, please try again");
+      showMessage("Google sign in failed, please try again..\n$e");
     }
   }
 
@@ -128,7 +141,19 @@ class _LoginViewState extends State<LoginView> {
         newUsername: username,
         newEmail: email,
       );
+      await context.read<UserProvider>().ensureUserDocument(
+        uid: user.uid,
+        name: username ?? 'N/A',
+        email: email,
+      );
+      if (mounted) {
+        await context.read<UserProvider>().loadAdminStatus(user.uid);
+      }
+      if (mounted) {
+        await context.read<FavoritesProvider>().loadFavorites(user.uid);
+      }
       stopLoading();
+      if (!mounted) return;
       Navigator.pushReplacement(context, route(const Root()));
     } on FirebaseAuthException catch (e) {
       stopLoading();
@@ -190,6 +215,7 @@ class _LoginViewState extends State<LoginView> {
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
+        appBar: AppBar(toolbarHeight: 0, backgroundColor: AppColors.bg),
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(

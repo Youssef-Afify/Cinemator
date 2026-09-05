@@ -4,20 +4,20 @@ import '../core/constants/app_colors.dart';
 class SearchField extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String> onSearch;
-  final ValueChanged<bool>? onFavorite;
-  const SearchField({
-    super.key,
-    this.controller,
-    required this.onSearch,
-    this.onFavorite,
-  });
+  const SearchField({super.key, this.controller, required this.onSearch});
 
   @override
   State<SearchField> createState() => _SearchFieldState();
 }
 
 class _SearchFieldState extends State<SearchField> {
-  bool favorite = false;
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +32,10 @@ class _SearchFieldState extends State<SearchField> {
       child: TextField(
         controller: widget.controller,
         onChanged: (value) => widget.onSearch(value),
+        textInputAction: TextInputAction.done,
         cursorColor: AppColors.primary,
         cursorHeight: 20.0,
+        focusNode: _searchFocusNode,
         style: TextStyle(color: AppColors.secondary),
         decoration: InputDecoration(
           filled: true,
@@ -44,18 +46,14 @@ class _SearchFieldState extends State<SearchField> {
           enabledBorder: border,
           disabledBorder: border,
           focusedBorder: border,
-          suffixIcon: widget.onFavorite != null
+          suffixIcon:
+              widget.controller != null && widget.controller!.text.isNotEmpty
               ? GestureDetector(
                   onTap: () {
-                    setState(() => favorite = !favorite);
-                    if (widget.onFavorite != null) {
-                      widget.onFavorite!(favorite);
-                    }
+                    widget.controller!.text = '';
+                    widget.onSearch('');
                   },
-                  child: Icon(
-                    favorite ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.red[800],
-                  ),
+                  child: Icon(Icons.close, color: AppColors.secondary),
                 )
               : null,
         ),
